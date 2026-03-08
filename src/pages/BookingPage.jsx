@@ -8,9 +8,7 @@ import HeroImage from "../assets/HeroImage.jpg";
 import { FaUser } from "react-icons/fa";
 import { AiOutlineScissor } from "react-icons/ai";
 import { MdDateRange } from "react-icons/md";
-
-
-
+import { FaRegCalendarCheck } from "react-icons/fa";
 
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM',
@@ -66,12 +64,12 @@ const BookingPage = () => {
     }
   }
 
-
-  console.log("Date:", date)
+  console.log("customer name:", customerName)
+  console.log("Time:", timeSlot)
   return(
     <div className="w-full max-w-7xl mx-auto ">
       <Navbar/>
-      <div className="max-w-2xl w-full  mx-auto flex flex-col p-4">
+      <div className="max-w-2xl w-full  mx-auto flex flex-col p-4 gap-4">
         <div className="rounded-lg h-60 w-full relative overflow-hidden">
           <img src={HeroImage} alt="" className="w-full h-full object-cover"/>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/60 to-transparent"></div>
@@ -85,7 +83,7 @@ const BookingPage = () => {
           <label htmlFor="name">CUSTOMER NAME</label>
           <div className="relative w-full flex items-center">
             <FaUser className="text-primary absolute left-3"/>
-             <input type="text" name="name" className="input-field pl-10"/>
+             <input type="text" name="name" className="input-field pl-10" value={customerName} onChange={e => setCustomerName(e.target.value)}/>
           </div>
          
         </div>
@@ -139,14 +137,30 @@ const BookingPage = () => {
           <label htmlFor="date">PREFERRED DATE</label>
           <div className="relative flex items-center" onClick={() => dateRef.current.showPicker()}>
             <MdDateRange className="absolute left-3 text-primary"/>
-            <input type="date" name="date" className="input-field pl-10" ref={dateRef} onChange={e => setDate(e.target.value)}/>
+            <input type="date" name="date" className="input-field pl-10 text-white" ref={dateRef} onChange={e => setDate(e.target.value)}/>
           </div>
 
         </div>
+
+        <div>
+          <p>AVAILABLE TIME SLOTS</p>
+          <div className="grid grid-cols-3 gap-2">
+            {TIME_SLOTS.map(time => (
+              <div key={time} className={`border rounded-xl text-center py-4 ${timeSlot === time ? 'border-primary' : 'border-neutral-border'}  `} onClick={() => setTimeSlot(time)} >
+                {time}
+              </div>
+            ))}
+          </div>
+        
+        </div>
+
+
         
       </div>
      
-        <button onClick={handleBooking}>Book</button>
+        <button onClick={handleBooking} className="flex items-center justify-center rounded-md py-4 gap-2 w-full bg-primary text-black font-semibold text-xl">
+          <FaRegCalendarCheck/>
+          <p>BOOK APPOINTMENT</p></button>
         </div>
   
     </div>
