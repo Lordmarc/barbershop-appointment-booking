@@ -137,7 +137,7 @@ const BookingPage = () => {
           <label htmlFor="date">PREFERRED DATE</label>
           <div className="relative flex items-center" onClick={() => dateRef.current.showPicker()}>
             <MdDateRange className="absolute left-3 text-primary"/>
-            <input type="date" name="date" className="input-field pl-10 text-white" ref={dateRef} onChange={e => setDate(e.target.value)}/>
+            <input type="date" name="date" className="input-field pl-10 " ref={dateRef} onChange={e => setDate(e.target.value)}/>
           </div>
 
         </div>
