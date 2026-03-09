@@ -4,7 +4,7 @@ import { createAppointment } from "../services/appointmentService";
 import { getBarbers, getServices } from "../services/barberService";
 import BarberCard from "../components/BarberCard";
 import Navbar from "../components/navbar";
-import HeroImage from "../assets/HeroImage.jpg";
+import BookingImage from "../assets/HeroImage.jpg";
 import { FaUser } from "react-icons/fa";
 import { AiOutlineScissor } from "react-icons/ai";
 import { MdDateRange } from "react-icons/md";
@@ -13,7 +13,8 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM',
   '12:00 PM', '1:00 PM', '2:00 PM',
-  '3:00 PM', '4:00 PM', '5:00 PM'
+  '3:00 PM', '4:00 PM', '5:00 PM',
+  '6:00 PM', '7:00 PM', '8:00 PM'
 ]
 
 const BookingPage = () => {
@@ -71,7 +72,7 @@ const BookingPage = () => {
       <Navbar/>
       <div className="max-w-2xl w-full  mx-auto flex flex-col p-4 gap-4">
         <div className="rounded-lg h-60 w-full relative overflow-hidden">
-          <img src={HeroImage} alt="" className="w-full h-full object-cover"/>
+          <img src={BookingImage} alt="" className="w-full h-full object-cover"/>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/60 to-transparent"></div>
           <div className="absolute bottom-8 left-4 text0white z-10 text-4xl max-w-44 font-display">
             <p>Book Your Experience</p>

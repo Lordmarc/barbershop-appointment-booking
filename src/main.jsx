@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './store/AuthContext.jsx'
 import { AppointmentProvider } from './store/AppointmentContext.jsx'
+import 'leaflet/dist/leaflet.css'
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
