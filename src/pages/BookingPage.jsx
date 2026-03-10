@@ -9,6 +9,8 @@ import { FaUser } from "react-icons/fa";
 import { AiOutlineScissor } from "react-icons/ai";
 import { MdDateRange } from "react-icons/md";
 import { FaRegCalendarCheck } from "react-icons/fa";
+import { useAuthContext } from "../store/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM',
@@ -18,6 +20,7 @@ const TIME_SLOTS = [
 ]
 
 const BookingPage = () => {
+  const { user } = useAuthContext();
   const { dispatch } = useAppointments();
   const [ customerName, setCustomerName ] = useState("");
   const [ date, setDate ] = useState('');
@@ -29,6 +32,7 @@ const BookingPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const dateRef = useRef();
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +48,10 @@ const BookingPage = () => {
   }, [])
 
   const handleBooking = async () => {
+    if(!user){
+      navigate('/login');
+      return
+    }
     if(!customerName || !date || !timeSlot || !barberId || !serviceId ){
       alert("Fill all the fields")
       return;

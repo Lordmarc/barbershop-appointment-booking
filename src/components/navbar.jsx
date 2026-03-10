@@ -5,9 +5,8 @@ import { IoClose } from "react-icons/io5";
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { GoHomeFill } from "react-icons/go";
 import { FaCalendarAlt } from "react-icons/fa";
-import { AiOutlineScissor } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
-import { TbLogout2 } from "react-icons/tb";
+
 
 
 const Navbar = () => {
@@ -53,28 +52,21 @@ const Navbar = () => {
                 <span>Home</span>
               </Link>
 
-              <Link className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all `} >
-                <AiOutlineScissor/>
-                <span>Services</span>
-              </Link>
 
               <Link to='/booking' className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive('/booking')}`}>
                 <FaCalendarAlt/>
                 <span>Book</span>
               </Link>
 
-              <Link className='flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all'>
+              <Link to="/profile" className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive('/profile')}`}>
                 <FaUser/>
                 <span>Profile</span>
               </Link>
              </nav>
 
-             {/* Footer */}
 
-             <div className='flex items-center p-4 gap-1 border-t border-t-neutral-border mt-auto cursor-pointer'>
-              <TbLogout2/>
-              <span>Logout</span>
-             </div>
+
+
           </div>
         </>
       )

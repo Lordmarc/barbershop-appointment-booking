@@ -5,7 +5,7 @@ export const useAuth = () => {
   const [ user, setUser ] = useState(undefined);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    supabase.auth.getSession().then(({ data: {session} }) => setUser(session?.user ?? null))
 
     const { data: listener } = supabase.auth.onAuthStateChange(( _event,session ) => {
       setUser(session?.user ?? null)

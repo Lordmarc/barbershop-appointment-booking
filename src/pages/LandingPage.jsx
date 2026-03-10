@@ -1,9 +1,9 @@
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import HeroImage from "../assets/HeroImage.jpg";
 import leo from "../assets/leo.png";
 import ric from "../assets/ric.png";
 import taloy from "../assets/taloy.png"
-import { Link } from "react-router-dom";
+import { data, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getServices } from "../services/barberService";
 import ServiceCard from "../components/ServiceCard";
@@ -13,9 +13,11 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaClock } from "react-icons/fa6";
 import { FaPhoneAlt } from "react-icons/fa";
 import Footer from "../components/Footer";
+import { useAuthContext } from "../store/AuthContext";
 
 const LandingPage = () => {
   const [services, setServices] = useState([]);
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const fetchServices = async() => {
@@ -24,6 +26,7 @@ const LandingPage = () => {
     }
     fetchServices();
   },[])
+
 
   console.log("Services Data:", services)
   return(
@@ -39,7 +42,7 @@ const LandingPage = () => {
               <span className="text-slate-500">Experience the gold standard of </span>
               <span className="text-primary">Grooming.</span>
             </div>
-            <Link className=" bg-primary text-black font-semibold p-2 rounded-lg shadow-primary">Book Appointment</Link>
+            <Link to="/booking" className=" bg-primary text-black font-semibold p-2 rounded-lg shadow-primary">Book Appointment</Link>
           </div>
         </div>
 
