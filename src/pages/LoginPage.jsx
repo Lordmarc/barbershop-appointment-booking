@@ -71,7 +71,7 @@ const LoginPage = () => {
             <div className="text-slate-400 flex flex-col">
               <label htmlFor="" className="uppercase mb-2 font-semibold text-white/70">Email Address</label>
               <div className="flex items-center w-full text-xl">
-                 <input type="text" placeholder="Enter your email"  className="w-full bg-transparent pl-8 p-2 border-2 border-neutral-border rounded-md"/>
+                 <input type="email" placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)}  className="w-full bg-transparent pl-8 p-2 border-2 border-neutral-border rounded-md"/>
                  <MdOutlineMail className="absolute left-6"/>
               </div>
            
@@ -80,7 +80,7 @@ const LoginPage = () => {
             <div className="text-slate-400 flex flex-col">
               <label htmlFor="" className="uppercase mb-2 font-semibold text-white/70">Password</label>
               <div className="flex items-center w-full text-xl">
-                 <input type={isShow ? 'text' : 'password'} placeholder="Enter your password" className="w-full bg-transparent pl-8 p-2 border-2 border-neutral-border rounded-md"/>
+                 <input type={isShow ? 'text' : 'password'} placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-transparent pl-8 p-2 border-2 border-neutral-border rounded-md"/>
                  <CiLock className="absolute left-6"/>
                  <div className="absolute right-7" onClick={handleToggle}>
                     {isShow ? <FaRegEyeSlash/> : <FaRegEye/>  }

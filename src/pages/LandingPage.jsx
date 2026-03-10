@@ -3,7 +3,7 @@ import HeroImage from "../assets/HeroImage.jpg";
 import leo from "../assets/leo.png";
 import ric from "../assets/ric.png";
 import taloy from "../assets/taloy.png"
-import { data, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getServices } from "../services/barberService";
 import ServiceCard from "../components/ServiceCard";
