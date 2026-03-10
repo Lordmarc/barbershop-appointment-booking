@@ -3,7 +3,7 @@ import { useAppointments } from "../store/AppointmentContext"
 import { createAppointment } from "../services/appointmentService";
 import { getBarbers, getServices } from "../services/barberService";
 import BarberCard from "../components/BarberCard";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import BookingImage from "../assets/HeroImage.jpg";
 import { FaUser } from "react-icons/fa";
 import { AiOutlineScissor } from "react-icons/ai";
