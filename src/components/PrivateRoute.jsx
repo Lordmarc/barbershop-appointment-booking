@@ -5,7 +5,7 @@ const PrivateRoute = () => {
   const { user } = useAuthContext();
 
   if (user === undefined) return <p>Loading...</p>
-  return user ? <Outlet/> : <Navigate to="/" />
+  return user ? <Outlet/> : <Navigate to="/login" />
 }
 
 export default PrivateRoute;

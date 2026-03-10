@@ -30,3 +30,18 @@ export const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 };
+
+export const registerAccount = async(email, password, fullName, phoneNumber) => {
+  const { data, error } = await supabase.auth.signUp({
+    email: email.trim(),
+    password: password,
+    options: {
+      data: {
+        full_name: fullName,
+        phone_number: phoneNumber
+      }
+    }
+  });
+  if(error) throw error;
+  return data;
+}

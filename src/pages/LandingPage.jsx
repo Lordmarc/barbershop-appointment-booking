@@ -17,7 +17,7 @@ import { useAuthContext } from "../store/AuthContext";
 
 const LandingPage = () => {
   const [services, setServices] = useState([]);
-  const { user } = useAuthContext();
+
 
   useEffect(() => {
     const fetchServices = async() => {
@@ -28,7 +28,7 @@ const LandingPage = () => {
   },[])
 
 
-  console.log("Services Data:", services)
+
   return(
     <div className="w-full max-w-7xl mx-auto ">
       <Navbar/>

@@ -5,10 +5,12 @@ import { IoIosMenu } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../assets/Logo.jpg";
+import { useAuthContext } from "../store/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuthContext();
 
   const toggle = () => {
     setIsOpen(!isOpen);
@@ -64,7 +66,13 @@ const Navbar = () => {
                 <FaCalendarAlt />
                 <span>Book</span>
               </Link>
-
+              { !user ? (
+                <>
+                  <Link to="/login" className="bg-slate-800/75 p-2 rounded-lg font-semibold">Login</Link>
+                  <Link to="/register" className="bg-primary rounded-lg p-2 text-neutral-dark font-semibold">Register</Link>
+                </>
+                
+              ) : (
               <Link
                 to="/profile"
                 className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive("/profile")}`}
@@ -72,6 +80,10 @@ const Navbar = () => {
                 <FaUser />
                 <span>Profile</span>
               </Link>
+              )
+
+              }
+             
             </nav>
           </div>
         </>

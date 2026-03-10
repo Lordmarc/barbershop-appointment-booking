@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { MdOutlineMail } from "react-icons/md";
 import { CiLock } from "react-icons/ci";
@@ -8,6 +8,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { loginWithGoogle, loginWithFacebook } from '../services/authService';
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { GrLinkPrevious } from "react-icons/gr";
 
 import Logo from "../assets/Logo.jpg"
 
@@ -36,8 +37,11 @@ const LoginPage = () => {
 
   return(
     <div className="min-h-screen w-full flex items-center justify-center">
-      <div>
-
+    <div className="flex flex-col h-full w-full p-4">
+      <Link to='/' className="absolute top-4 left-2 text-xl">
+        <GrLinkPrevious />
+      </Link>
+      
       {/* Barbershop logo container */}
         <div className=" w-full flex flex-col items-center justify-center gap-4 text-center">
 

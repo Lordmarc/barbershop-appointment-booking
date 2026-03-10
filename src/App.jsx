@@ -6,6 +6,7 @@ import BookingPage from './pages/BookingPage'
 import PrivateRoute from './components/PrivateRoute'
 import LandingPage from './pages/LandingPage'
 import Profile from './pages/Profile'
+import RegisterPage from './pages/RegisterPage'
 
 const App = () => {
 
@@ -16,6 +17,7 @@ const App = () => {
       <Route path='/' element={<LandingPage/>} />
       <Route path='/booking' element={<BookingPage/>} />
       <Route path='/login' element={<LoginPage/>} />
+      <Route path='/register' element={<RegisterPage/>}/>
       <Route element={<PrivateRoute/>}>
         <Route path="/admin" element={<AdminPage/>} />
         <Route path='/profile' element={<Profile/>}/>
