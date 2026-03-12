@@ -5,7 +5,7 @@ import { MdOutlineMail } from "react-icons/md";
 import { CiLock } from "react-icons/ci";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { loginWithGoogle, loginWithFacebook } from '../services/authService';
+import { loginWithGoogle, loginWithFacebook, loginWithEmail } from '../services/authService';
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { GrLinkPrevious } from "react-icons/gr";
@@ -26,13 +26,31 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+  if(!email || !password) 
+  {
+    setError("Fill all fields");
+    return;
+  }
 
-    if (error) {
-      setError(error.message)
-    } else {
-      navigate('/admin')
+  try {
+    await loginWithEmail(email, password)
+
+    const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', (await supabase.auth.getUser()).data.user.id)
+    .single();
+
+    if(profile?.role === 'admin')
+      navigate('/admin');
+    else{
+      navigate('/');
     }
+  }catch(err){
+    setError(err.message);
+  }
+    
+    
   } 
 
   return(
@@ -94,7 +112,8 @@ const LoginPage = () => {
            
             </div>
 
-            <div className="flex w-full items-center justify-center bg-primary text-neutral-dark font-semibold text-2xl rounded-lg shadow-primary shadow p-4">
+            <div className="flex w-full items-center justify-center bg-primary text-neutral-dark font-semibold text-2xl rounded-lg shadow-primary shadow p-4"
+            onClick={handleLogin}>
               <button>Login to my Account</button>
             </div>
 

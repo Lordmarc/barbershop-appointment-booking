@@ -5,11 +5,13 @@ import App from './App.jsx'
 import { AuthProvider } from './store/AuthContext.jsx'
 import { AppointmentProvider } from './store/AppointmentContext.jsx'
 import 'leaflet/dist/leaflet.css'
+import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <StrictMode>
       <AppointmentProvider>
+        <Toaster position='bottom-right'/>
           <App />
       </AppointmentProvider>
     </StrictMode>

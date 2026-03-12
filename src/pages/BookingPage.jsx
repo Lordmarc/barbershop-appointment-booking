@@ -11,6 +11,7 @@ import { MdDateRange } from "react-icons/md";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { useAuthContext } from "../store/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM',
@@ -20,9 +21,8 @@ const TIME_SLOTS = [
 ]
 
 const BookingPage = () => {
-  const { user } = useAuthContext();
+  const { user, profile } = useAuthContext();
   const { dispatch } = useAppointments();
-  const [ customerName, setCustomerName ] = useState("");
   const [ date, setDate ] = useState('');
   const [ timeSlot, setTimeSlot ] = useState('');
   const [ barberId, setBarberId ] = useState('');
@@ -52,14 +52,14 @@ const BookingPage = () => {
       navigate('/login');
       return
     }
-    if(!customerName || !date || !timeSlot || !barberId || !serviceId ){
+    if(!date || !timeSlot || !barberId || !serviceId ){
       alert("Fill all the fields")
       return;
     }
     try{
       dispatch({ type: 'SET_LOADING' })
       const newAppointment = await createAppointment({
-        customer_name: customerName,
+        customer_name: profile?.full_name,
         date,
         time_slot: timeSlot,
         barber_id: barberId,
@@ -68,13 +68,20 @@ const BookingPage = () => {
       })
       dispatch({ type: 'ADD_APPOINTMENT', payload: newAppointment })
 
+      toast.success('Booking confirmed!!!')
+      setDate('');
+      setTimeSlot('');
+      setBarberId('');
+      setServiceId('');
+      setSelectedService(null);
     }catch(error){
       dispatch({ type: 'SET_ERROR', payload:  error.message })
+      toast.error('Booking failed')
     }
   }
 
-  console.log("customer name:", customerName)
-  console.log("Time:", timeSlot)
+
+
   return(
     <div className="w-full max-w-7xl mx-auto ">
       <Navbar/>
@@ -92,7 +99,7 @@ const BookingPage = () => {
           <label htmlFor="name">CUSTOMER NAME</label>
           <div className="relative w-full flex items-center">
             <FaUser className="text-primary absolute left-3"/>
-             <input type="text" name="name" className="input-field pl-10" value={customerName} onChange={e => setCustomerName(e.target.value)}/>
+             <input type="text" name="name" className="input-field pl-10" value={profile?.full_name ?? ''} disabled/>
           </div>
          
         </div>
@@ -146,7 +153,7 @@ const BookingPage = () => {
           <label htmlFor="date">PREFERRED DATE</label>
           <div className="relative flex items-center" onClick={() => dateRef.current.showPicker()}>
             <MdDateRange className="absolute left-3 text-primary"/>
-            <input type="date" name="date" className="input-field pl-10 " ref={dateRef} onChange={e => setDate(e.target.value)}/>
+            <input type="date" name="date" className="input-field pl-10 " ref={dateRef} value={date} onChange={e => setDate(e.target.value)}/>
           </div>
 
         </div>

@@ -18,6 +18,7 @@ const RegisterPage = () => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    role: 'user'
   });
   const [isShow, setIsShow] = useState(false);
 
@@ -45,7 +46,7 @@ const RegisterPage = () => {
     }
 
     try{
-      await registerAccount(formData.email,formData.password, formData.fullName,  formData.phoneNumber, );
+      await registerAccount(formData.email,formData.password, formData.fullName,  formData.phoneNumber, formData.role );
       navigate('/');
     }catch(err){
       console.error(err.message)
@@ -56,15 +57,15 @@ const RegisterPage = () => {
   
   return(
     <div className="w-full flex flex-col min-h-screen max-w-7xl mx-auto ">
-      <div className="flex flex-col p-4 flex-1">
-        <div className="flex items-center justify-center" onClick={() => navigate(-1)}>
-          <GrLinkPrevious className="absolute left-2"/>
+      <div className="flex flex-col flex-1">
+        <div className="flex items-center justify-center relative  px-2 py-4 border-b-2  border-b-neutral-border" onClick={() => navigate(-1)}>
+          <GrLinkPrevious className="absolute left-4"/>
           <p>Create Account</p>
         </div>
 
         {/* Registration input fields */}
 
-        <div className="flex flex-col gap-4 flex-1 h-full">
+        <div className="flex flex-col gap-4 flex-1 h-full  p-4">
           <CustomInput
             label="Full Name"
             type="text"

@@ -1,5 +1,15 @@
 import { supabase } from "../lib/supabase"
 
+export const loginWithEmail = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) throw error;
+  return data;
+}
+
 export const loginWithGoogle = async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -31,17 +41,45 @@ export const getCurrentUser = async () => {
   return user;
 };
 
-export const registerAccount = async(email, password, fullName, phoneNumber) => {
+export const registerAccount = async(email, password, fullName, phoneNumber,role) => {
   const { data, error } = await supabase.auth.signUp({
     email: email.trim(),
     password: password,
     options: {
       data: {
         full_name: fullName,
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
+        role: role,
       }
     }
   });
   if(error) throw error;
   return data;
+}
+
+export const getCustomers = async () => {
+  const now = new Date();
+
+ 
+  const firstDayThisMonth = new Date(now.getFullYear(), now.getMonth(),1).toISOString().split('T')[0];
+  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+  const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
+
+  const [{ count: thisMonthTotal, error: error1 }, {count: lastMonthTotal, error: error2}] = await Promise.all([
+    supabase
+    .from('profiles')
+    .select('*', {count: 'exact', head: true})
+    .eq('role', 'user')
+    .gte('created_at', firstDayThisMonth),
+
+    supabase
+    .from('profiles')
+    .select('*', {count: 'exact', head: true})
+    .eq('role', 'user')
+    .gte('created_at', firstDayLastMonth)
+    .lte('created_at', lastDayLastMonth)
+  ])
+  if(error1 || error2) throw error1 || error2;
+ 
+  return {thisMonthTotal, lastMonthTotal};
 }
