@@ -20,6 +20,7 @@ import { useAuthContext } from "../../store/AuthContext";
 import { getCustomers } from "../../services/authService";
 import { FaIdBadge } from "react-icons/fa6";
 import { getBarbers, getTotalBarbers } from "../../services/barberService";
+import Table from "../../components/Table";
 
 
 const AdminPage = () => {
@@ -28,6 +29,9 @@ const AdminPage = () => {
   const [ bookingStats, setBookingStats] = useState({ todayCount:0, yesterdayCount: 0 });
   const [ revenue, setRevenue ] = useState({ thisMonthTotal: 0, lastMonthTotal: 0});
   const [ barber, setBarber ] = useState(0);
+  const [ currentPage, setCurrrentPage] = useState(1);
+  const [ totalCount, setTotalCount ] = useState(0);
+  const itemsPerPage = 5;
   const navigate = useNavigate();
 
   const fetchBookingStats = async() => {
@@ -50,8 +54,9 @@ const AdminPage = () => {
     const fetchAppointments = async () => {
       try {
         dispatch({ type: "SET_LOADING" });
-        const data = await getAppointments();
+        const { data,count } = await getAppointments(currentPage, itemsPerPage);
         dispatch({ type: "SET_APPOINTMENTS", payload: data });
+        setTotalCount(count);
       } catch (error) {
         dispatch({ type: "SET_ERROR", payload: error.message });
       }
@@ -67,7 +72,7 @@ const AdminPage = () => {
   const bookingPercentage = getPercentageChange(bookingStats.todayCount, bookingStats.yesterdayCount);
   const monthlyPercentage = getPercentageChange(revenue.thisMonthTotal, revenue.lastMonthTotal);
   const totalBarbers = barber.length;
-  console.log("Barber", totalBarbers)
+  console.log("State", state)
   const handleCancel = async (id) => {
     try {
       await cancelAppointment(id);
@@ -83,7 +88,7 @@ const AdminPage = () => {
   return (
     <div className="bg-neutral-dark flex min-h-screen w-full">
       <Sidebar/>
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 flex flex-col gap-4">
         <div>
           <h1>Hello, Admin</h1>
           <p className="text-slate-400">Here's what's happening at Negro Barbershop today.</p>
@@ -94,6 +99,8 @@ const AdminPage = () => {
           <StatsCard total={(revenue.thisMonthTotal).toFixed(2)} icon={GiMoneyStack} title="monthly revenue" symbol="PHP" percentage={monthlyPercentage}/>
           <StatsCard total={barber} icon={FaIdBadge} title=" barbers"/>
         </div>
+
+        <Table appointments={state.appointments} currentPage={currentPage} totalPages={Math.ceil(totalCount/itemsPerPage)} onChangePage={setCurrrentPage} dispatch={dispatch}/>
       </div>
     </div>
   );

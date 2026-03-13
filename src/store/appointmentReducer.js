@@ -14,9 +14,13 @@ export const appointmentReducer = ( state, action ) => {
       return {...state, appointments: [action.payload, ...state.appointments]}
     case 'CANCEL_APPOINTMENT':
       return {...state, 
-        appointments: state.appointments.map(a => a.id === action.payload ? {...a, status: 'cancelled'} : a
+        appointments: state.appointments.map(a => a.id === action.payload.id ? {...a, status: 'cancelled'} : a
         )
       }
+    case 'UPDATE_STATUS':
+      return {...state, appointments: state.appointments.map(a => 
+        a.id === action.payload.id ? {...a, status: action.payload.status} : a
+      )}
     case 'SET_ERROR':
       return {...state, error: action.payload, loading: false}
     default:

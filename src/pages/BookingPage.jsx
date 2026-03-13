@@ -60,6 +60,7 @@ const BookingPage = () => {
       dispatch({ type: 'SET_LOADING' })
       const newAppointment = await createAppointment({
         customer_name: profile?.full_name,
+        user_id: user.id,
         date,
         time_slot: timeSlot,
         barber_id: barberId,

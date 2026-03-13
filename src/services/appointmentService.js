@@ -1,11 +1,16 @@
 import { supabase } from "../lib/supabase"
 
-export const getAppointments = async () => {
-  const { data, error } = await supabase.from('appointments').select('*')
+export const getAppointments = async (page = 1, itemsPerPage = 5) => {
+  const start = (page - 1) * itemsPerPage; 
+  const end = start + itemsPerPage - 1;
+  const { data, count, error } = await supabase
+  .from('appointments')
+  .select('*, services(name,price), barbers(name,image), profiles(email) ', {count: 'exact'})
   .order('created_at', {ascending:false})
+  .range(start,end);
 
   if(error) throw error;
-  return data
+  return { data, count }
 }
 
 export const createAppointment = async (appointment) => {
@@ -79,3 +84,11 @@ export const getRevenue = async () => {
 
 }
 
+export const updateStatus = async(id, status)=> {
+  const {error} = await supabase
+  .from('appointments')
+  .update({ status })
+  .eq('id', id)
+
+  if(error) throw error;
+}
