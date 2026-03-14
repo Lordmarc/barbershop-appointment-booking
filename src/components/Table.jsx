@@ -17,32 +17,12 @@ const statusColor = {
   cancelled: 'bg-red-500/20 text-red-500',
 }
 
-const Table = ({ appointments =[], totalCount, currentPage, totalPages, onChangePage, dispatch }) => {
+const Table = ({ appointments =[], totalCount, currentPage, totalPages, onChangePage, onDelete, onUpdateStatus }) => {
   const startItem = (currentPage - 1) * 5 + 1;
   const endItem = Math.min(currentPage * 5, totalCount);
   console.log(appointments)
   console.log(totalPages)
 
-  const handleUpdateStatus = async(id, status) => {
-    try{
-      await updateStatus(id,status);
-      dispatch({ type: 'UPDATE_STATUS',
-        payload: { id, status  }
-       })
-    }catch(err){
-      console.error(err.message)
-    }
-  }
-
-  const handleDelete = async(id) => {
-    try{
-      await deleteAppointment(id);
-        dispatch({ type: 'DELETE_APPOINTMENT', payload: id});
-      
-    }catch(err){
-      console.error(err)
-    }
-  }
   return(
     <div className="bg-primary/10 rounded-lg h-full flex-1 flex flex-col overflow-hidden border border-neutral-border">
       <div className="flex items-center justify-between p-2 bg-primary/10 text-xl">
@@ -101,7 +81,7 @@ const Table = ({ appointments =[], totalCount, currentPage, totalPages, onChange
                       <div className="relative inline-block">
                         <select
                           value={a.status}
-                          onChange={(e) => handleUpdateStatus(a.id, e.target.value)}
+                          onChange={(e) => onUpdateStatus(a.id, e.target.value)}
                                 className={`focus:outline-none px-2 py-1 pr-5 rounded-full cursor-pointer border border-neutral-border  appearance-none  text-xs ${statusColor[a.status]}`}
                         >
                           <option value="pending" className={statusColor.pending}>Pending</option>
@@ -114,7 +94,7 @@ const Table = ({ appointments =[], totalCount, currentPage, totalPages, onChange
                         </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <div className="h-8 w-8 bg-primary rounded-md p-1 flex items-center justify-center shadow-primary/50 shadow group hover:bg-primary/25 cursor-pointer transition-all" onClick={() => handleDelete(a.id)}>
+                      <div className="h-8 w-8 bg-primary rounded-md p-1 flex items-center justify-center shadow-primary/50 shadow group hover:bg-primary/25 cursor-pointer transition-all" onClick={() => onDelete(a.id)}>
                         <button className="text-neutral-dark group-hover:text-white"><FaRegTrashAlt/></button>
                       </div>
                     </td>

@@ -47,7 +47,7 @@ export const getTopBarbers = async () => {
 
   const topBarbers = Object.values(barberCount)
   .sort((a, b) => b.count - a.count)
-  .slice(0, 3);
+  .slice(0, 5);
 
   return topBarbers;
 }

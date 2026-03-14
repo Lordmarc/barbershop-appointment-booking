@@ -28,11 +28,11 @@ import RevenueChart from "../../components/RevenueChart";
 
 const AdminPage = () => {
   const { user } = useAuthContext();
-  const { state, dispatch } = useAppointments();
   const [ bookingStats, setBookingStats] = useState({ todayCount:0, yesterdayCount: 0 });
   const [ revenue, setRevenue ] = useState({ thisMonthTotal: 0, lastMonthTotal: 0});
   const [ barber, setBarber ] = useState(0);
-  const [ currentPage, setCurrrentPage] = useState(1);
+  const [ todayAppointments, setTodayAppointments ] = useState([]);
+  const [ currentPage, setCurrentPage] = useState(1);
   const [ totalCount, setTotalCount ] = useState(0);
   const [ topBarbers, setTopBarbers ] = useState([]);
   const itemsPerPage = 5;
@@ -63,12 +63,14 @@ const AdminPage = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        dispatch({ type: "SET_LOADING" });
+   
         const { data,count } = await getTodayAppointments(currentPage, itemsPerPage);
-        dispatch({ type: "SET_APPOINTMENTS", payload: data });
+        console.log(data)
+        setTodayAppointments(data)
         setTotalCount(count);
+        
       } catch (error) {
-        dispatch({ type: "SET_ERROR", payload: error.message });
+        console.error(error)
       }
     };
 
@@ -79,7 +81,18 @@ const AdminPage = () => {
     fetchTopBarbers();
   }, [currentPage]);
 
-  const totalBookings = state.appointments.length;
+
+    const handleUpdateStatus = (id, status) => {
+      setTodayAppointments(prev => 
+        prev.map(a => a.id === id ? {...a, status} : a)
+      );
+    }
+
+    const handleDelete = (id) => {
+      setTodayAppointments(prev => prev.filter(a => a.id !== id));
+    }
+  console.log("appointment",todayAppointments)
+  const totalBookings = todayAppointments.length;
   const bookingPercentage = getPercentageChange(bookingStats.todayCount, bookingStats.yesterdayCount);
   const monthlyPercentage = getPercentageChange(revenue.thisMonthTotal, revenue.lastMonthTotal);
 
@@ -88,7 +101,7 @@ const AdminPage = () => {
 
 
 
-  if (state.error) return <p>Error: {state.error}</p>;
+  // if (state.error) return <p>Error: {state.error}</p>;
   return (
     <div className="bg-neutral-dark flex min-h-screen w-full">
       <Sidebar/>
@@ -104,7 +117,7 @@ const AdminPage = () => {
           <StatsCard total={barber} icon={FaIdBadge} title=" barbers"/>
         </div>
 
-        <Table appointments={state.appointments} totalCount={totalCount} currentPage={currentPage} totalPages={Math.ceil(totalCount/itemsPerPage)} onChangePage={setCurrrentPage} dispatch={dispatch}/>
+        <Table appointments={todayAppointments} totalCount={totalCount} currentPage={currentPage} totalPages={Math.ceil(totalCount/itemsPerPage)} onChangePage={setCurrentPage} onUpdateStatus={handleUpdateStatus} onDelete={handleDelete}/>
         <div className="flex gap-4">
           <TopBarbers topThree={topBarbers}/>
           <div className="flex-1">

@@ -13,6 +13,27 @@ export const getAppointments = async (page = 1, itemsPerPage = 5) => {
   return { data, count }
 }
 
+export const getAppointmentStatusCount = async () => {
+  const { data,error } = await supabase
+  .from('appointments')
+  .select('*, services(name,price), barbers(name,image), profiles(email) ')
+  .order('created_at', {ascending: false})
+
+  if (error) throw error;
+  console.log("raw data", data);
+  const statusCount = data.reduce((acc, appointment) => {
+    const status = appointment.status;
+    if(!acc[status]){
+      acc[status] = 0;
+    }
+    acc[status] += 1;
+    return acc;
+  }, {});
+
+  console.log("statusCount", statusCount);
+  return { data, statusCount};
+}
+
 export const getTodayAppointments = async(page = 1, itemsPerPage = 5) => {
 const today = new Date().toISOString().split('T')[0];
 const start = (page - 1) * itemsPerPage; 
@@ -147,3 +168,4 @@ export const getWeeklyChart = async() => {
 
   return revenue;
 }
+
