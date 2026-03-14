@@ -21,6 +21,8 @@ export const appointmentReducer = ( state, action ) => {
       return {...state, appointments: state.appointments.map(a => 
         a.id === action.payload.id ? {...a, status: action.payload.status} : a
       )}
+    case 'DELETE_APPOINTMENT':
+      return {...state, appointments: state.appointments.filter(a => a.id !== action.payload)}
     case 'SET_ERROR':
       return {...state, error: action.payload, loading: false}
     default:

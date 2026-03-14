@@ -7,6 +7,7 @@ import {
   getBookingStats,
   getPercentageChange,
   getRevenue,
+  getTodayAppointments,
 } from "../../services/appointmentService";
 import { useAppointments } from "../../store/AppointmentContext";
 import Logo from "../../assets/Logo.jpg";
@@ -19,9 +20,11 @@ import { GiMoneyStack } from "react-icons/gi";
 import { useAuthContext } from "../../store/AuthContext";
 import { getCustomers } from "../../services/authService";
 import { FaIdBadge } from "react-icons/fa6";
-import { getBarbers, getTotalBarbers } from "../../services/barberService";
+import { getBarbers, getTopBarbers, getTotalBarbers } from "../../services/barberService";
 import Table from "../../components/Table";
-
+import TopBarbers from "../../components/TopBarbers";
+import BarChart from "../../components/RevenueChart";
+import RevenueChart from "../../components/RevenueChart";
 
 const AdminPage = () => {
   const { user } = useAuthContext();
@@ -31,6 +34,7 @@ const AdminPage = () => {
   const [ barber, setBarber ] = useState(0);
   const [ currentPage, setCurrrentPage] = useState(1);
   const [ totalCount, setTotalCount ] = useState(0);
+  const [ topBarbers, setTopBarbers ] = useState([]);
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
@@ -47,14 +51,20 @@ const AdminPage = () => {
 
   const fetchBarbers = async() => {
     const data = await getTotalBarbers();
+
     setBarber(data);
+  }
+
+  const fetchTopBarbers = async() => {
+    const data = await getTopBarbers();
+    setTopBarbers(data);
   }
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         dispatch({ type: "SET_LOADING" });
-        const { data,count } = await getAppointments(currentPage, itemsPerPage);
+        const { data,count } = await getTodayAppointments(currentPage, itemsPerPage);
         dispatch({ type: "SET_APPOINTMENTS", payload: data });
         setTotalCount(count);
       } catch (error) {
@@ -66,24 +76,18 @@ const AdminPage = () => {
     fetchBookingStats();
     fetchTotalRevenue();
     fetchBarbers();
-  }, []);
+    fetchTopBarbers();
+  }, [currentPage]);
 
   const totalBookings = state.appointments.length;
   const bookingPercentage = getPercentageChange(bookingStats.todayCount, bookingStats.yesterdayCount);
   const monthlyPercentage = getPercentageChange(revenue.thisMonthTotal, revenue.lastMonthTotal);
-  const totalBarbers = barber.length;
-  console.log("State", state)
-  const handleCancel = async (id) => {
-    try {
-      await cancelAppointment(id);
-      dispatch({ type: "CANCEL_APPOINTMENT", payload: id });
-    } catch (error) {
-      dispatch({ type: "SET_ERROR", payload: error.message });
-    }
-  };
+
+  console.log("top", topBarbers)
 
 
-  if (state.loading) return <p>Loading...</p>;
+
+
   if (state.error) return <p>Error: {state.error}</p>;
   return (
     <div className="bg-neutral-dark flex min-h-screen w-full">
@@ -100,7 +104,13 @@ const AdminPage = () => {
           <StatsCard total={barber} icon={FaIdBadge} title=" barbers"/>
         </div>
 
-        <Table appointments={state.appointments} currentPage={currentPage} totalPages={Math.ceil(totalCount/itemsPerPage)} onChangePage={setCurrrentPage} dispatch={dispatch}/>
+        <Table appointments={state.appointments} totalCount={totalCount} currentPage={currentPage} totalPages={Math.ceil(totalCount/itemsPerPage)} onChangePage={setCurrrentPage} dispatch={dispatch}/>
+        <div className="flex gap-4">
+          <TopBarbers topThree={topBarbers}/>
+          <div className="flex-1">
+            <RevenueChart/>
+          </div>
+        </div>
       </div>
     </div>
   );
