@@ -1,13 +1,20 @@
 import { supabase } from "../lib/supabase"
 
-export const getAppointments = async (page = 1, itemsPerPage = 5) => {
+export const getAppointments = async (page = 1, itemsPerPage = 5, status = 'all', startDate ='', endDate = '') => {
   const start = (page - 1) * itemsPerPage; 
   const end = start + itemsPerPage - 1;
-  const { data, count, error } = await supabase
+  let query = supabase
   .from('appointments')
   .select('*, services(name,price), barbers(name,image), profiles(email) ', {count: 'exact'})
   .order('created_at', {ascending:false})
   .range(start,end);
+
+  if(status !== 'all') query = query.eq('status', status);
+  if(startDate && endDate){
+    query = query.gte('date', startDate).lte('date', endDate);
+  }
+
+  const { data, count, error } = await query;
 
   if(error) throw error;
   return { data, count }

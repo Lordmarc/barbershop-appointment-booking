@@ -1,4 +1,4 @@
-const statusName = [
+ const statusName = [
   "pending", "confirmed", "completed", "cancelled"
 ];
 
