@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import Profile from "./pages/Profile";
 import RegisterPage from "./pages/RegisterPage";
 import Appointments from "./pages/admin/Appointments";
+import Barbers from "./pages/admin/Barbers";
 
 const App = () => {
   return (
@@ -22,8 +23,12 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
         </Route>
         <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/appointments" element={<Appointments/>} />
+          <Route path="/admin">
+            <Route index element={<AdminPage />} />
+            <Route path="appointments" element={<Appointments/>} />
+            <Route path="barbers" element={<Barbers/>} />
+          </Route>
+      
         </Route>
       </Routes>
     </BrowserRouter>

@@ -9,21 +9,15 @@ import {
   getRevenue,
   getTodayAppointments,
 } from "../../services/appointmentService";
-import { useAppointments } from "../../store/AppointmentContext";
-import Logo from "../../assets/Logo.jpg";
-import { MdDashboard } from "react-icons/md";
 import Sidebar from "../../components/Sidebar";
 import StatsCard from "../../components/StatsCard";
 import { FaRegCalendarCheck } from "react-icons/fa";
-import { AiOutlineRise } from "react-icons/ai";
 import { GiMoneyStack } from "react-icons/gi";
 import { useAuthContext } from "../../store/AuthContext";
-import { getCustomers } from "../../services/authService";
 import { FaIdBadge } from "react-icons/fa6";
-import { getBarbers, getTopBarbers, getTotalBarbers } from "../../services/barberService";
+import {  getTopBarbers, getTotalBarbers } from "../../services/barberService";
 import Table from "../../components/Table";
 import TopBarbers from "../../components/TopBarbers";
-import BarChart from "../../components/RevenueChart";
 import RevenueChart from "../../components/RevenueChart";
 
 const AdminPage = () => {

@@ -43,12 +43,12 @@ const Sidebar = () => {
             <p>Dashboard</p>
           </Link>
 
-          <Link to="/appointments" className={`flex items-center gap-1 p-2 rounded-md ${ activeTab('/appointments')}`}>
+          <Link to="/admin/appointments" className={`flex items-center gap-1 p-2 rounded-md ${ activeTab('/appointments')}`}>
           <FaRegCalendar/>
             <p>Appointments</p>
           </Link>
 
-          <Link to="/barbers" className={`flex items-center gap-1 p-2 rounded-md ${ activeTab('/barbers')}`}>
+          <Link to="/admin/barbers" className={`flex items-center gap-1 p-2 rounded-md ${ activeTab('/barbers')}`}>
           <RxScissors/>
             <p>Barbers</p>
           </Link>
