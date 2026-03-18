@@ -42,19 +42,22 @@ export const getAppointmentStatusCount = async () => {
 }
 
 export const getTodayAppointments = async(page = 1, itemsPerPage = 5) => {
-const today = new Date().toISOString().split('T')[0];
-const start = (page - 1) * itemsPerPage; 
-const end = start + itemsPerPage - 1;
+  // ✅ gamitin ang PH timezone
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+  // Output: "2026-03-19" — correct PH date
 
-const { data, count, error } = await supabase
-.from('appointments')
-.select('*, services(name,price), barbers(name,image), profiles(email)', {count: 'exact'})
-.eq('date', today)
-.order('created_at', {ascending:false})
-.range(start, end)
-if(error) throw error;
+  const start = (page - 1) * itemsPerPage;
+  const end = start + itemsPerPage - 1;
 
-return {data, count};
+  const { data, count, error } = await supabase
+    .from('appointments')
+    .select('*, services(name,price), barbers(name,image), profiles(email)', { count: 'exact' })
+    .eq('date', today)
+    .order('created_at', { ascending: false })
+    .range(start, end);
+
+  if (error) throw error;
+  return { data, count };
 }
 
 export const createAppointment = async (appointment) => {
@@ -147,24 +150,28 @@ export const deleteAppointment = async(id) => {
 }
 
 export const getWeeklyChart = async() => {
-  const today = new Date()
+  
+  const toManilaDate = (date) => 
+    new Date(date).toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+  const today = new Date();
   const monday = new Date(today);
-  monday.setDate(today.getDate() - today.getDay() + 1)
+  monday.setDate(today.getDate() - today.getDay() + 1);
 
   const { data, error } = await supabase
-  .from('appointments')
-  .select('date, services(price)')
-  .eq('status',  'completed')
-  .gte('date', monday.toISOString().split('T')[0])
-  .lte('date', today.toISOString().split('T')[0])
+    .from('appointments')
+    .select('date, services(price)')
+    .eq('status', 'completed')
+    .gte('date', toManilaDate(monday))  // ✅
+    .lte('date', toManilaDate(today))   // ✅
 
-  if(error) throw error;
+  if (error) throw error;
 
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const revenue = days.map((day, i) => {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = toManilaDate(date); // ✅
 
     const total = data
       .filter(a => a.date === dateStr)
@@ -175,4 +182,3 @@ export const getWeeklyChart = async() => {
 
   return revenue;
 }
-

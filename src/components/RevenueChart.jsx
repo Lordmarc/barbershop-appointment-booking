@@ -14,6 +14,8 @@ const WeeklyChart = () => {
     fetch();
   }, []);
 
+
+
   return (
     <div className="bg-primary/10 rounded-lg p-4 border border-neutral-border">
       <p className="text-xl mb-4">Weekly Revenue</p>

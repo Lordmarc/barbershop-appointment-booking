@@ -2,18 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import {
-  cancelAppointment,
-  getAppointments,
   getBookingStats,
   getPercentageChange,
   getRevenue,
   getTodayAppointments,
+  
 } from "../../services/appointmentService";
 import Sidebar from "../../components/Sidebar";
 import StatsCard from "../../components/StatsCard";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
-import { useAuthContext } from "../../store/AuthContext";
+
 import { FaIdBadge } from "react-icons/fa6";
 import {  getTopBarbers, getTotalBarbers } from "../../services/barberService";
 import Table from "../../components/Table";
@@ -21,7 +20,7 @@ import TopBarbers from "../../components/TopBarbers";
 import RevenueChart from "../../components/RevenueChart";
 
 const AdminPage = () => {
-  const { user } = useAuthContext();
+
   const [ bookingStats, setBookingStats] = useState({ todayCount:0, yesterdayCount: 0 });
   const [ revenue, setRevenue ] = useState({ thisMonthTotal: 0, lastMonthTotal: 0});
   const [ barber, setBarber ] = useState(0);
@@ -30,7 +29,7 @@ const AdminPage = () => {
   const [ totalCount, setTotalCount ] = useState(0);
   const [ topBarbers, setTopBarbers ] = useState([]);
   const itemsPerPage = 5;
-  const navigate = useNavigate();
+
 
   const fetchBookingStats = async() => {
     const data = await getBookingStats();
@@ -54,7 +53,7 @@ const AdminPage = () => {
     setTopBarbers(data);
   }
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchAppointments = async () => {
       try {
    
@@ -90,7 +89,6 @@ const AdminPage = () => {
   const bookingPercentage = getPercentageChange(bookingStats.todayCount, bookingStats.yesterdayCount);
   const monthlyPercentage = getPercentageChange(revenue.thisMonthTotal, revenue.lastMonthTotal);
 
-  console.log("top", topBarbers)
 
 
 

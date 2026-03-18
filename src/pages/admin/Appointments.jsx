@@ -18,7 +18,7 @@ const Appointments = () => {
   const [ barbers, setBarbers] = useState([]);
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ totalCount, setTotalCount ] = useState(0);
-  const itemPerPage = 5;
+  const itemPerPage = 5; 
   console.log("status filter:", statusFilter)
 
   const fetchBarbers = async() => {
@@ -47,10 +47,12 @@ const Appointments = () => {
       }
     }
     fetchAppointments();
-    fetchStatusCount();
-    fetchBarbers();
+  
   },[currentPage, startDate, endDate, statusFilter])
-
+    useEffect(() => {
+      fetchStatusCount();
+      fetchBarbers();
+    }, []);
   const handleDelete = async(id) => {
     try{
       await deleteAppointment(id);
@@ -65,7 +67,7 @@ const Appointments = () => {
       <Sidebar/>
       <div className="flex-1 flex flex-col gap-2 p-8">
         <AppointmentHeader appointments={statusCount}/>
-        <Filter state={state} onUpdateStatusFilter={handleStatusFilter} s statusFilter={statusFilter} onChangeBarber={setBarber} barbers={barbers} startDate={startDate} endDate={endDate} onUpdateStartDate={setStartDate} onUpdateEndDate={setEndDate}/>
+        <Filter state={state} onUpdateStatusFilter={handleStatusFilter} statusFilter={statusFilter} onChangeBarber={setBarber} barbers={barbers} startDate={startDate} endDate={endDate} onUpdateStartDate={setStartDate} onUpdateEndDate={setEndDate}/>
 
         <AppointmentTable state={state.appointments ?? []} status={statusFilter} barber={barber} totalCount={totalCount}  currentPage={currentPage} totalPages={Math.ceil(totalCount/itemPerPage)} onChangePage={setCurrentPage} onDelete={handleDelete}/>
       </div>
