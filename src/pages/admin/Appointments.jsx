@@ -39,7 +39,7 @@ const Appointments = () => {
   useEffect(() => {
     const fetchAppointments = async() => {
       try{
-        const { data, count } = await getAppointments(currentPage, itemPerPage, statusFilter, startDate, endDate);
+        const { data, count } = await getAppointments(currentPage, itemPerPage, statusFilter, startDate, endDate, barber);
         dispatch({ type: "SET_APPOINTMENTS", payload: data })
         setTotalCount(count)
       }catch(err){
@@ -48,7 +48,7 @@ const Appointments = () => {
     }
     fetchAppointments();
   
-  },[currentPage, startDate, endDate, statusFilter])
+  },[currentPage, startDate, endDate, statusFilter,barber])
     useEffect(() => {
       fetchStatusCount();
       fetchBarbers();
@@ -62,6 +62,8 @@ const Appointments = () => {
       console.error(err.message);
     }
   }
+
+  console.log("Barber", barber)
   return(
     <div className="bg-neutral-dark flex min-h-screen w-full">
       <Sidebar/>

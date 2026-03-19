@@ -54,7 +54,7 @@ const Filter = ({ statusFilter, startDate, onUpdateStartDate, onUpdateEndDate, e
           >
             <option value="all" className="bg-[#1e241a]">All Barbers</option>
             {barbers.map(b => (
-              <option key={b.id} value={b.name} className="bg-[#1e241a]">{b.name}</option>
+              <option key={b.id} value={b.id} className="bg-[#1e241a]">{b.name}</option>
             ))}
           </select>
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">

@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase"
 
-export const getAppointments = async (page = 1, itemsPerPage = 5, status = 'all', startDate ='', endDate = '') => {
+export const getAppointments = async (page = 1, itemsPerPage = 5, status = 'all', startDate ='', endDate = '', barber= "all") => {
   const start = (page - 1) * itemsPerPage; 
   const end = start + itemsPerPage - 1;
   let query = supabase
@@ -10,6 +10,7 @@ export const getAppointments = async (page = 1, itemsPerPage = 5, status = 'all'
   .range(start,end);
 
   if(status !== 'all') query = query.eq('status', status);
+  if (barber !== 'all') query = query.eq('barber_id', barber);
   if(startDate && endDate){
     query = query.gte('date', startDate).lte('date', endDate);
   }
@@ -130,7 +131,7 @@ export const getRevenue = async () => {
   return { thisMonthTotal, lastMonthTotal }
 
 }
-
+ 
 export const updateStatus = async(id, status)=> {
   const {error} = await supabase
   .from('appointments')

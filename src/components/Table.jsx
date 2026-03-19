@@ -1,131 +1,134 @@
-import { IoFilterSharp } from "react-icons/io5";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { deleteAppointment, updateStatus } from "../services/appointmentService";
-import { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { GrPrevious, GrNext } from "react-icons/gr";
-
 dayjs.extend(localizedFormat)
 
 export const statusColor = {
-  pending: 'bg-yellow-500/20 text-yellow-500',
-  confirmed: 'bg-blue-500/20 text-blue-500',
-  completed: 'bg-green-500/20 text-green-500',
-  cancelled: 'bg-red-500/20 text-red-500',
-}
+  pending:   { dot: "bg-yellow-400", text: "text-yellow-300", border: "border-yellow-400/30", bg: "bg-yellow-400/10" },
+  confirmed: { dot: "bg-blue-400",   text: "text-blue-300",   border: "border-blue-400/30",   bg: "bg-blue-400/10"   },
+  completed: { dot: "bg-green-400",  text: "text-green-300",  border: "border-green-400/30",  bg: "bg-green-400/10"  },
+  cancelled: { dot: "bg-red-400",    text: "text-red-300",    border: "border-red-400/30",    bg: "bg-red-400/10"    },
+};
 
-const Table = ({ appointments =[], totalCount, currentPage, totalPages, onChangePage, onDelete, onUpdateStatus }) => {
+const Table = ({ appointments = [], totalCount, currentPage, totalPages, onChangePage, onDelete, onUpdateStatus }) => {
   const startItem = (currentPage - 1) * 5 + 1;
   const endItem = Math.min(currentPage * 5, totalCount);
-  console.log(appointments)
-  console.log(totalPages)
 
-  return(
-    <div className="bg-primary/10 rounded-lg h-full flex-1 flex flex-col overflow-hidden border border-neutral-border">
-      <div className="flex items-center justify-between p-2 bg-primary/10 text-xl">
-        <p>Today's Appointments</p>
-        <div>
-          <IoFilterSharp/>
-        </div>
-      </div>
-      
-      <div className="h-full flex flex-col relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-neutral-border">
-        <table className="w-full text-sm text-left rtl:text-right text-body">
-            <thead className="text-sm text-body bg-primary/10 border-b border-b-primary/25 rounded-base border-default">
-                <tr className="text-slate-500">
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                        customer
-                    </th>
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                        date & time
-                    </th>
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                        service
-                    </th>
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                        barbers
-                    </th>
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                        status
-                    </th>
-                    <th scope="col" className="px-6 py-3 font-medium uppercase">
-                      actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody className="">
-                {appointments.map(a => (
-                  <tr key={a.id} className="bg-primary-/5 border-b border-neutral-border">
-                    <td scope="row" className="px-6 py-4 font-medium text-heading whitespace-nowrap">
-                       <p className="text-xl">{a.customer_name}</p>
-                       <span className="text-slate-500">{a.profiles.email}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                       <p className="text-xl">{dayjs(a.date).format('ll')}</p>
-                       <span className="text-primary">{a.time_slot}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                        <p className="text-xl">{a.services.name}</p>
-                    </td>
-                    <td className="px-6 py-4 ">
-                      <div className="flex items-center gap-2">
-                        <img src={a.barbers.image} alt="barbers_picture" className="w-10 h-10 rounded-full" />
-                        <p className="text-xl">{a.barbers.name}</p>
-                      </div>
-                       
-                    </td>
-                    <td className="px-6 py-4 relative">
-                      <div className="relative inline-block">
-                        <select
-                          value={a.status}
-                          onChange={(e) => onUpdateStatus(a.id, e.target.value)}
-                                className={`focus:outline-none px-2 py-1 pr-5 rounded-full cursor-pointer border border-neutral-border  appearance-none  text-xs ${statusColor[a.status]}`}
-                        >
-                          <option value="pending" className={statusColor.pending}>Pending</option>
-                          <option value="confirmed" className={statusColor.confirmed}>Confirmed</option>
-                          <option value="completed" className={statusColor.completed}>Completed</option>
-                          <option value="cancelled" className={statusColor.cancelled}>Cancelled</option>
-                        </select>
+  return (
+    <div className="flex flex-col bg-[#1a1f14] border border-white/[0.07] rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
 
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-xs">▼</span>
-                        </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="h-8 w-8 bg-primary rounded-md p-1 flex items-center justify-center shadow-primary/50 shadow group hover:bg-primary/25 cursor-pointer transition-all" onClick={() => onDelete(a.id)}>
-                        <button className="text-neutral-dark group-hover:text-white"><FaRegTrashAlt/></button>
-                      </div>
-                    </td>
-                </tr>
-
-                ))}
-           
-            </tbody>
-        </table>
-        <div className="mt-auto w-full  flex p-2 justify-end gap-2 border-t border-t-primary/20">
-        <div>
-          <p>Showing {startItem} of {endItem}</p>
-        </div>
-          <button className="bg-neutral-dark border border-neutral-border p-2 rounded-md text-sm" onClick={() => onChangePage(currentPage - 1)}><GrPrevious/></button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-            <button
-              key={page}
-              onClick={() => onChangePage(page)}
-              className={`w-8 h-8 rounded-md text-sm border border-neutral-border
-                ${currentPage === page 
-                  ? 'bg-primary text-black font-semibold' 
-                  : 'bg-neutral-dark hover:bg-primary/20'
-                }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button className="bg-neutral-dark border border-neutral-border p-2 rounded-md text-sm" onClick={() => onChangePage(currentPage + 1)}><GrNext/></button>
-        </div>
+      {/* Table Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.07]">
+        <p className="text-[#f0ede6] font-bold">Today's Appointments</p>
       </div>
 
+      <table className="w-full text-sm text-left">
+        <thead>
+          <tr className="border-b border-white/[0.07] bg-[#1e241a]">
+            {["Customer", "Date & Time", "Service", "Barbers", "Status", "Actions"].map(col => (
+              <th key={col} className="px-6 py-3 text-[10px] font-bold tracking-widest uppercase text-gray-500">
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {appointments.map(a => {
+            const sc = statusColor[a.status] || statusColor.pending;
+            return (
+              <tr key={a.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+
+                {/* Customer */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <p className="text-[#f0ede6] font-semibold">{a.customer_name}</p>
+                  <span className="text-xs text-gray-500">{a.profiles.email}</span>
+                </td>
+
+                {/* Date & Time */}
+                <td className="px-6 py-4">
+                  <p className="text-[#f0ede6] font-semibold">{dayjs(a.date).format('ll')}</p>
+                  <span className="text-xs text-[#86c559]">{a.time_slot}</span>
+                </td>
+
+                {/* Service */}
+                <td className="px-6 py-4">
+                  <p className="text-[#d4cfc6]">{a.services.name}</p>
+                </td>
+
+                {/* Barber */}
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <img src={a.barbers?.image} alt="barber" className="w-8 h-8 rounded-full object-cover border border-white/10"/>
+                    <p className="text-[#d4cfc6]">{a.barbers?.name ?? "N/A"}</p>
+                  </div>
+                </td>
+ 
+                {/* Status */}
+                <td className="px-6 py-4">
+                  <div className="relative inline-block">
+                    <select
+                      value={a.status}
+                      onChange={(e) => onUpdateStatus(a.id, e.target.value)}
+                      className={`focus:outline-none pl-6 pr-7 py-1 rounded-full cursor-pointer border appearance-none text-xs font-bold tracking-widest ${sc.border} ${sc.bg} ${sc.text}`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                    <span className={`absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full pointer-events-none ${sc.dot}`}/>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] text-gray-500">▼</span>
+                  </div>
+                </td>
+
+                {/* Actions */}
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => onDelete(a.id)}
+                    className="w-8 h-8 bg-[#1e241a] border border-white/10 rounded-lg flex items-center justify-center text-gray-500 hover:bg-red-500/20 hover:text-red-400 hover:border-red-400/30 transition-all cursor-pointer"
+                  >
+                    <FaRegTrashAlt size={12}/>
+                  </button>
+                </td>
+
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-end gap-2 p-3 border-t border-white/[0.07]">
+        <p className="text-xs text-gray-500 mr-2">Showing {startItem} of {endItem}</p>
+        <button
+          onClick={() => onChangePage(currentPage - 1)}
+          className="w-8 h-8 bg-[#1e241a] border border-white/[0.07] rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#2a3a1a] transition-all"
+        >
+          <GrPrevious size={11}/>
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+          <button
+            key={page}
+            onClick={() => onChangePage(page)}
+            className={`w-8 h-8 rounded-lg text-sm border transition-all
+              ${currentPage === page
+                ? 'bg-[#86c559] border-[#86c559] text-black font-bold'
+                : 'bg-[#1e241a] border-white/[0.07] text-gray-400 hover:bg-[#2a3a1a]'
+              }`}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          onClick={() => onChangePage(currentPage + 1)}
+          className="w-8 h-8 bg-[#1e241a] border border-white/[0.07] rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#2a3a1a] transition-all"
+        >
+          <GrNext size={11}/>
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default Table;

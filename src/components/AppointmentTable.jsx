@@ -18,8 +18,8 @@ const AppointmentTable = ({ state, status, barber, totalCount, onChangePage, cur
 
   const filteredAppointments = state
     .filter(item => status === "all" || item.status === status)
-    .filter(item => barber === "all" || item.barbers.name === barber);
 
+  console.log(filteredAppointments)
   return (
     <div className="flex flex-col bg-[#1a1f14] border border-white/[0.07] rounded-xl overflow-hidden">
       <table className="w-full text-sm text-left">
@@ -63,11 +63,11 @@ const AppointmentTable = ({ state, status, barber, totalCount, onChangePage, cur
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <img
-                      src={a.barbers.image}
+                      src={a.barbers?.image}
                       alt="barber"
                       className="w-8 h-8 rounded-full object-cover border border-white/10"
                     />
-                    <p className="text-[#d4cfc6]">{a.barbers.name}</p>
+                    <p className="text-[#d4cfc6]">{a.barbers?.name ?? "N/A"}</p>
                   </div>
                 </td>
 

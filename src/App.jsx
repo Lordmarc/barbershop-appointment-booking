@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import RegisterPage from "./pages/RegisterPage";
 import Appointments from "./pages/admin/Appointments";
 import Barbers from "./pages/admin/Barbers";
+import Services from "./pages/admin/Services";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
             <Route index element={<AdminPage />} />
             <Route path="appointments" element={<Appointments/>} />
             <Route path="barbers" element={<Barbers/>} />
+            <Route path="services" element={<Services/>}/>
           </Route>
       
         </Route>

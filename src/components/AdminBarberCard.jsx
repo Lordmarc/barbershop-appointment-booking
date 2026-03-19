@@ -25,9 +25,10 @@ const statusConfig = {
   },
 };
 
-const AdminBarberCard = ({ barber, onDelete, onStatusChange }) => {
+const AdminBarberCard = ({ barber, onDelete, onStatusChange, onEditProfile }) => {
   const [status, setStatus] = useState(barber?.status || "active");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const dropdownRef = useRef(null);
 
   const current = statusConfig[status];
@@ -106,13 +107,13 @@ const handleStatusChange = (newStatus) => {
         />
         <div className="flex gap-2 pb-1">
           <button
-            onClick=""
+            onClick={() => onEditProfile(barber)}
             className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-white/[0.12] transition-colors cursor-pointer"
           >
             <FiEdit2 size={13} />
           </button>
           <button
-            onClick={onDelete}
+            onClick={() => onDelete(barber.id)}
             className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
           >
             <FaRegTrashAlt size={13} />
@@ -129,10 +130,15 @@ const handleStatusChange = (newStatus) => {
         <div className="h-px bg-white/[0.07] mb-3" />
 
         <div className="flex flex-col gap-1.5">
-          <div className="flex gap-2">
-            <span className="text-[11px] text-gray-500 w-14 shrink-0">Specialty</span>
-            <span className="text-[12px] text-[#d4cfc6] font-semibold">{barber.specialty}</span>
-          </div>
+      <div className="flex gap-2">
+        <span className="text-[11px] text-gray-500 w-14 shrink-0">Specialty</span> {/* idagdag ulit */}
+        <span className="text-[12px] text-[#d4cfc6] font-semibold">
+          {Array.isArray(barber.specialty) 
+            ? barber.specialty.join(', ') 
+            : barber.specialty}
+        </span>
+      </div>
+
           <div className="flex gap-2 items-center">
             <span className="text-[11px] text-gray-500 w-14 shrink-0">Shift</span>
             <span className="text-[12px] text-[#d4cfc6] font-semibold">{barber.shift}</span>
