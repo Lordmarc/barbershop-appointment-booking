@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import HeroImage from "../assets/HeroImage.jpg";
 import leo from "../assets/leo.png";
 import ric from "../assets/ric.png";
-import taloy from "../assets/taloy.png"
+import placeholder from "../assets/placeholder.png"
 import {  Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getServices } from "../services/barberService";
@@ -30,9 +30,9 @@ const LandingPage = () => {
 
 
   return(
-    <div className="w-full max-w-7xl mx-auto ">
+    <div className="min-h-screen bg-[#0f1309] w-full pt-16">
       <Navbar/>
-      <div className="flex flex-col gap-4 w-full">
+      <div className="max-w-5xl  w-full mx-auto flex flex-col p-4 gap-6">
         <div className="rounded-lg overflow-hidden w-full relative">
           <img src={HeroImage} alt="" className="w-full h-full object-cover"/>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/60 to-transparent"></div>
@@ -40,9 +40,9 @@ const LandingPage = () => {
             <p className="text-2xl font-bold">Book Your Haircut in Seconds</p>
             <div className="mb-8">
               <span className="text-slate-500">Experience the gold standard of </span>
-              <span className="text-primary">Grooming.</span>
+              <span className="text-[#86c559]">Grooming.</span>
             </div>
-            <Link to="/booking" className=" bg-primary text-black font-semibold p-2 rounded-lg shadow-primary">Book Appointment</Link>
+            <Link to="/booking" className=" bg-[#86c559] text-black font-semibold p-2 rounded-lg shadow-primary">Book Appointment</Link>
           </div>
         </div>
 
@@ -56,19 +56,19 @@ const LandingPage = () => {
           </div>
         </div>
 
-        <div className="bg-neutral-dark border-y border-slate-700/50 flex flex-col gap-8 items-center justify-center p-4">
+        <div className="bg-[#1a1f14] border-y border-slate-700/50 flex flex-col gap-8 items-center justify-center p-4">
             <div className="flex flex-col items-center justify-center">
-              <span className="text-primary">OUR ARTISANS</span>
+              <span className="text-[#86c559]">OUR ARTISANS</span>
               <p className="text-4xl ">Meet the Masters</p>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <Barber image={leo} name="Leo Jay" specialist="Head Barber" experience="lLorem ipsum dolor sit amet consectetur adipisicing elit. Dolore ratione tenetur voluptas, ullam odit non!"/>
               <Barber image={ric} name="Jeric C." specialist="Fade Specialist" experience="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur obcaecati temporibus earum cum, aliquid odit." />
-              <Barber image={taloy} name="Taloy" specialist="Tapper Specialist" experience="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur obcaecati temporibus earum cum, aliquid odit."/>
+              <Barber image={placeholder} name="Taloy" specialist="Tapper Specialist" experience="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur obcaecati temporibus earum cum, aliquid odit."/>
             </div>
         </div>
 
-        <div className="p-4 flex flex-col-reverse gap-8">
+        <div className="p-4 flex flex-col-reverse md:flex-row gap-8">
           <div className="flex flex-col gap-4">
             <div>
               <p className="text-4xl">Visit the Studio</p>
@@ -76,7 +76,7 @@ const LandingPage = () => {
             </div>
             <ul className="flex flex-col gap-2">
               <li className="flex gap-2 ">
-                <FaMapMarkerAlt className="text-primary"/>
+                <FaMapMarkerAlt className="text-[#86c559]"/>
                 <div className="text-slate-400">
                   <p>Blk 8 Lot 7 Sepvhoai Ibayo Tipas</p>
                   <p>Taguig City, Philippines, 1630</p>
@@ -84,7 +84,7 @@ const LandingPage = () => {
                 
               </li>
                <li className="flex gap-2">
-                <FaClock className="text-primary"/>
+                <FaClock className="text-[#86c559]"/>
                 <div className="text-slate-400">
                   <p>Mon - Fri: 9:00 AM - 8:00 PM </p>
                   <p>Sat - Sun: 10:00 AM - 6:00 PM</p>
@@ -93,7 +93,7 @@ const LandingPage = () => {
               </li>
 
                <li className="flex gap-2">
-                <FaPhoneAlt className="text-primary"/>
+                <FaPhoneAlt className="text-[#86c559]"/>
                   <p className="text-slate-400">(+63) 09123456789</p>
               </li>
             </ul>

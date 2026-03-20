@@ -38,7 +38,15 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser();
-  return user;
+  if(!user) return null;
+
+  const {data, error} = await supabase
+  .from('profiles')
+  .select('*')
+  .eq('id', user.id)
+  .single()
+  if(error) throw error;
+  return data;
 };
 
 export const registerAccount = async(email, password, fullName, phoneNumber,role) => {
@@ -49,7 +57,7 @@ export const registerAccount = async(email, password, fullName, phoneNumber,role
       data: {
         full_name: fullName,
         phone_number: phoneNumber,
-        role: role,
+        role
       }
     }
   });
@@ -65,7 +73,7 @@ export const getCustomers = async () => {
   const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
   const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
 
-  const [{ count: thisMonthTotal, error: error1 }, {count: lastMonthTotal, error: error2}] = await Promise.all([
+  const [{ count: thisMonthTotal, error: error1 }, {count: lastMonthTotal, error: error2}, {data, error: error3 }] = await Promise.all([
     supabase
     .from('profiles')
     .select('*', {count: 'exact', head: true})
@@ -77,9 +85,17 @@ export const getCustomers = async () => {
     .select('*', {count: 'exact', head: true})
     .eq('role', 'user')
     .gte('created_at', firstDayLastMonth)
-    .lte('created_at', lastDayLastMonth)
+    .lte('created_at', lastDayLastMonth),
+    
+      supabase
+  .from('profiles')
+  .select('*, appointments(id,date,status)')
+  .eq('role', 'customer')
+  .order('full_name', { ascending:true })
   ])
-  if(error1 || error2) throw error1 || error2;
+
+
+  if(error1 || error2 || error3)  throw error1 || error2 || error3;
  
-  return {thisMonthTotal, lastMonthTotal};
+  return {thisMonthTotal, lastMonthTotal, data};
 }

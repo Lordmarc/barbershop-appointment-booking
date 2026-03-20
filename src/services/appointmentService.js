@@ -21,6 +21,19 @@ export const getAppointments = async (page = 1, itemsPerPage = 5, status = 'all'
   return { data, count }
 }
 
+export const getCustomerAppointment = async(userId) => {
+  const {data,error} = await supabase
+  .from('appointments')
+  .select(`*, services(name,price), barbers(name, image)`)
+  .eq('user_id', userId)
+  .order('created_at', {ascending:false})
+  .limit(1)
+  .single()
+  if(error) throw error
+  return data;
+
+}
+
 export const getAppointmentStatusCount = async () => {
   const { data,error } = await supabase
   .from('appointments')
@@ -28,7 +41,7 @@ export const getAppointmentStatusCount = async () => {
   .order('created_at', {ascending: false})
 
   if (error) throw error;
-  console.log("raw data", data);
+
   const statusCount = data.reduce((acc, appointment) => {
     const status = appointment.status;
     if(!acc[status]){
@@ -38,14 +51,14 @@ export const getAppointmentStatusCount = async () => {
     return acc;
   }, {});
 
-  console.log("statusCount", statusCount);
+
   return { data, statusCount};
 }
 
 export const getTodayAppointments = async(page = 1, itemsPerPage = 5) => {
-  // ✅ gamitin ang PH timezone
+
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
-  // Output: "2026-03-19" — correct PH date
+
 
   const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage - 1;

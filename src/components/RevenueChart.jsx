@@ -1,16 +1,28 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
 import { getWeeklyChart } from '../services/appointmentService';
+import { supabase } from '../lib/supabase';
 
 const RevenueChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const result = await getWeeklyChart();
       setData(result);
     };
-    fetch();
+
+    fetchData();
+
+    const subscription = supabase
+      .channel('revenue-chart-channel')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'appointments' },
+        () => fetchData() 
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
   }, []);
 
   return (

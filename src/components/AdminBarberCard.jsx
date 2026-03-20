@@ -1,5 +1,4 @@
 import tools from "../assets/tools.jpg";
-import taloy from "../assets/taloy.png"
 import { useState, useRef, useEffect } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -28,9 +27,7 @@ const statusConfig = {
 const AdminBarberCard = ({ barber, onDelete, onStatusChange, onEditProfile }) => {
   const [status, setStatus] = useState(barber?.status || "active");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const dropdownRef = useRef(null);
-
   const current = statusConfig[status];
 
   useEffect(() => {
@@ -43,16 +40,17 @@ const AdminBarberCard = ({ barber, onDelete, onStatusChange, onEditProfile }) =>
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-const handleStatusChange = (newStatus) => {
-  setStatus(newStatus);        // ← update local state (para mag-update yung badge agad)
-  setDropdownOpen(false);
-  if (onStatusChange) onStatusChange(barber.id, newStatus); // ← i-notify yung parent
-};
-  return (
-    <div className="relative rounded-2xl overflow-hidden flex flex-col w-56 bg-[#1a1f14] border border-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
+    setDropdownOpen(false);
+    if (onStatusChange) onStatusChange(barber.id, newStatus);
+  };
 
-      {/* Background Image Area */}
-      <div className="relative h-40 overflow-hidden">
+  return (
+    <div className="relative rounded-2xl overflow-hidden flex flex-col bg-[#1a1f14] border border-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+
+      {/* Background Image */}
+      <div className="relative h-32 sm:h-36 lg:h-40 overflow-hidden">
         <img
           src={tools}
           alt="background"
@@ -64,18 +62,18 @@ const handleStatusChange = (newStatus) => {
         <div className="absolute top-3 right-3" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className={`flex items-center gap-1.5 bg-[#14180e]/75 border ${current.border} rounded-full px-2.5 py-1 cursor-pointer transition-all hover:brightness-125`}
+            className={`flex items-center gap-1.5 bg-[#14180e]/75 border ${current.border} rounded-full px-2 py-1 cursor-pointer transition-all hover:brightness-125`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${current.dot}`} />
-            <span className={`text-[10px] font-bold tracking-widest ${current.text}`}>
+            <span className={`text-[9px] sm:text-[10px] font-bold tracking-widest ${current.text}`}>
               {current.label}
             </span>
-            <span className={`text-[9px] ${current.text} opacity-70`}>▼</span>
+            <span className={`text-[8px] ${current.text} opacity-70`}>▼</span>
           </button>
 
-          {/* Dropdown Menu */}
+          {/* Dropdown */}
           {dropdownOpen && (
-            <div className="absolute right-0 top-8 bg-[#1e241a] border border-white/10 rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.6)] z-50 min-w-[130px]">
+            <div className="absolute right-0 top-8 bg-[#1e241a] border border-white/10 rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.6)] z-50 min-w-[120px]">
               {Object.entries(statusConfig).map(([key, config]) => (
                 <button
                   key={key}
@@ -99,49 +97,48 @@ const handleStatusChange = (newStatus) => {
       </div>
 
       {/* Profile Image + Actions */}
-      <div className="flex items-end justify-between px-4 -mt-7 relative z-10">
+      <div className="flex items-end justify-between px-3 sm:px-4 -mt-6 sm:-mt-7 relative z-10">
         <img
           src={barber.image}
           alt="barber"
-          className="w-14 h-14 rounded-xl object-cover border-2 border-[#2a3020] shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border-2 border-[#2a3020] shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
         />
-        <div className="flex gap-2 pb-1">
+        <div className="flex gap-1.5 sm:gap-2 pb-1">
           <button
             onClick={() => onEditProfile(barber)}
-            className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-white/[0.12] transition-colors cursor-pointer"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-white/[0.12] transition-colors cursor-pointer"
           >
-            <FiEdit2 size={13} />
+            <FiEdit2 size={11} />
           </button>
           <button
             onClick={() => onDelete(barber.id)}
-            className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/[0.06] border border-white/10 text-gray-400 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
           >
-            <FaRegTrashAlt size={13} />
+            <FaRegTrashAlt size={11} />
           </button>
         </div>
       </div>
 
-      {/* Info Section */}
-      <div className="px-4 pt-2.5 pb-5">
-        <p className="text-[#f0ede6] font-bold text-lg tracking-tight leading-tight">
+      {/* Info */}
+      <div className="px-3 sm:px-4 pt-2 pb-4 flex flex-col gap-1.5">
+        <p className="text-[#f0ede6] font-bold text-sm sm:text-base lg:text-lg tracking-tight leading-tight truncate">
           {barber.name}
         </p>
-    
-        <div className="h-px bg-white/[0.07] mb-3" />
+
+        <div className="h-px bg-white/[0.07] my-1" />
 
         <div className="flex flex-col gap-1.5">
-      <div className="flex gap-2">
-        <span className="text-[11px] text-gray-500 w-14 shrink-0">Specialty</span> {/* idagdag ulit */}
-        <span className="text-[12px] text-[#d4cfc6] font-semibold">
-          {Array.isArray(barber.specialty) 
-            ? barber.specialty.join(', ') 
-            : barber.specialty}
-        </span>
-      </div>
-
+          <div className="flex gap-2 items-start">
+            <span className="text-[10px] text-gray-500 w-12 shrink-0 mt-0.5">Specialty</span>
+            <span className="text-[11px] text-[#d4cfc6] font-semibold leading-tight">
+              {Array.isArray(barber.specialty)
+                ? barber.specialty.join(', ')
+                : barber.specialty}
+            </span>
+          </div>
           <div className="flex gap-2 items-center">
-            <span className="text-[11px] text-gray-500 w-14 shrink-0">Shift</span>
-            <span className="text-[12px] text-[#d4cfc6] font-semibold">{barber.shift}</span>
+            <span className="text-[10px] text-gray-500 w-12 shrink-0">Shift</span>
+            <span className="text-[11px] text-[#d4cfc6] font-semibold">{barber.shift}</span>
           </div>
         </div>
       </div>

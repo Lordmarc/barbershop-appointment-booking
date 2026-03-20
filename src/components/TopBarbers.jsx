@@ -2,7 +2,7 @@ import { MdStarOutline } from "react-icons/md";
 
 const TopBarbers = ({ topThree }) => {
   return (
-    <div className="border border-white/[0.07] p-5 rounded-2xl w-72 bg-[#1a1f14] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+    <div className="border border-white/[0.07] p-5 rounded-2xl w-full md:w-72 bg-[#1a1f14] shadow-[0_8px_32px_rgba(0,0,0,0.4)] ">
       <div className="flex items-center gap-2 mb-5">
         <div className="p-1.5 bg-[#2a3a1a] rounded-lg">
           <MdStarOutline className="text-[#86c559] text-lg"/>

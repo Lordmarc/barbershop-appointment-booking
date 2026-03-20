@@ -11,6 +11,7 @@ import RegisterPage from "./pages/RegisterPage";
 import Appointments from "./pages/admin/Appointments";
 import Barbers from "./pages/admin/Barbers";
 import Services from "./pages/admin/Services";
+import Customers from "./pages/admin/Customer";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="appointments" element={<Appointments/>} />
             <Route path="barbers" element={<Barbers/>} />
             <Route path="services" element={<Services/>}/>
+            <Route path="customers" element={<Customers/>}/>
           </Route>
       
         </Route>

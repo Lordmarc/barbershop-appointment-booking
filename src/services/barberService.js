@@ -220,7 +220,7 @@ let imageUrl = barber.image;
 export const updateBarberStatus = async(id, status) => {
   const { error } = await supabase
   .from('barbers')
-  .update(barber)
+  .update({status})
   .eq('id', id)
 
   if(error) throw error;

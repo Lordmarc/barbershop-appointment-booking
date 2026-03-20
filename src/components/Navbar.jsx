@@ -2,93 +2,85 @@ import { useState } from "react";
 import { FaCalendarAlt, FaUser } from "react-icons/fa";
 import { GoHomeFill } from "react-icons/go";
 import { IoIosMenu } from "react-icons/io";
-import { IoClose } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../assets/Logo.jpg";
 import { useAuthContext } from "../store/AuthContext";
+import MobileSidebar from "./MobileSidebar";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuthContext();
 
-  const toggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const isActive = (path) => (location.pathname === path ? "text-primary" : "");
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="navbar">
-      <div
-        className="border h-10 w-10 border-gray-300 rounded-md p-1 shadow-sm shadow-white"
-        onClick={toggle}
-      >
-        <IoIosMenu className="w-full h-full" />
-      </div>
+    <>
+      <div className="fixed top-0 z-30 w-full bg-[#0f1309]/95 backdrop-blur-sm border-b border-white/[0.07]">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-      <p className="text-xl">NEGRO BARBERSHOP</p>
-
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/50 z-40" />
-
-          <div className="fixed h-full bg-neutral-dark max-w-56 w-full top-0 left-0 z-50 flex flex-col ">
-            {/* Sidebar Header */}
-            <div className="flex items-center justify-between mb-8 border-b border-neutral-border p-4">
-              <img
-                src={Logo}
-                alt="Negro Logo"
-                className="w-14 h-14 rounded-md"
-              />
-              <div
-                className="border h-8 w-8 border-gray-300 rounded-md p-1 shadow-sm shadow-white"
-                onClick={toggle}
-              >
-                <IoClose className=" cursor-pointer w-full h-full" />
-              </div>
+          {/* Logo + Title */}
+          <div className="flex items-center gap-3">
+            <img src={Logo} alt="logo" className="w-8 h-8 rounded-xl border border-white/[0.07]"/>
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase text-[#86c559]">Negro</p>
+              <p className="text-xs font-bold tracking-widest uppercase text-[#f0ede6]">Barbershop</p>
             </div>
+          </div>
 
-            {/* Links */}
-            <nav className="flex flex-col gap-4 p-4">
-              <Link
-                to="/"
-                className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive("/")}`}
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link 
+              to="/" 
+              className={`text-sm font-medium transition-all ${isActive('/') ? 'text-[#86c559]' : 'text-[#d4cfc6] hover:text-[#86c559]'}`}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/booking" 
+              className={`text-sm font-medium transition-all ${isActive('/booking') ? 'text-[#86c559]' : 'text-[#d4cfc6] hover:text-[#86c559]'}`}
+            >
+              Book
+            </Link>
+            {!user ? (
+              <div className="flex items-center gap-2">
+                <Link 
+                  to="/login" 
+                  className="text-sm font-medium text-[#d4cfc6] hover:text-[#86c559] transition-all"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="bg-[#86c559] text-[#0f1309] px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-[#86c559]/80 transition-all"
+                >
+                  Register
+                </Link>
+              </div>
+            ) : (
+              <Link 
+                to="/profile" 
+                className={`flex items-center gap-2 text-sm font-medium transition-all ${isActive('/profile') ? 'text-[#86c559]' : 'text-[#d4cfc6] hover:text-[#86c559]'}`}
               >
-                <GoHomeFill />
-                <span>Home</span>
-              </Link>
-
-              <Link
-                to="/booking"
-                className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive("/booking")}`}
-              >
-                <FaCalendarAlt />
-                <span>Book</span>
-              </Link>
-              { !user ? (
-                <>
-                  <Link to="/login" className="bg-slate-800/75 p-2 rounded-lg font-semibold">Login</Link>
-                  <Link to="/register" className="bg-primary rounded-lg p-2 text-neutral-dark font-semibold">Register</Link>
-                </>
-                
-              ) : (
-              <Link
-                to="/profile"
-                className={`flex gap-1 items-center text-xl cursor-pointer hover:text-primary transition-all ${isActive("/profile")}`}
-              >
-                <FaUser />
+                <FaUser size={13}/>
                 <span>Profile</span>
               </Link>
-              )
+            )}
+          </nav>
 
-              }
-             
-            </nav>
-          </div>
-        </>
-      )}
-    </div>
+          {/* Mobile Menu Button */}
+          <button 
+            onClick={() => setIsOpen(true)}
+            className="md:hidden w-9 h-9 border border-white/[0.07] rounded-md p-1 cursor-pointer text-[#d4cfc6] hover:bg-white/[0.06] transition-all"
+          >
+            <IoIosMenu className="w-full h-full"/>
+          </button>
+
+        </div>
+      </div>
+
+      <MobileSidebar isOpen={isOpen} onClose={() => setIsOpen(false)}/>
+    </>
   );
 };
 

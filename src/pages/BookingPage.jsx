@@ -84,104 +84,135 @@ const BookingPage = () => {
 
 
   return(
-    <div className="w-full max-w-7xl mx-auto ">
-      <Navbar/>
-      <div className="max-w-2xl w-full  mx-auto flex flex-col p-4 gap-4">
-        <div className="rounded-lg h-60 w-full relative overflow-hidden">
-          <img src={BookingImage} alt="" className="w-full h-full object-cover"/>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/60 to-transparent"></div>
-          <div className="absolute bottom-8 left-4 text0white z-10 text-4xl max-w-44 font-display">
-            <p>Book Your Experience</p>
+  <div className="min-h-screen bg-[#0f1309] w-full pt-16">
+    <Navbar/>
+    <div className="max-w-5xl  w-full mx-auto flex flex-col p-4 gap-6">
+      
+      {/* Hero Image */}
+      <div className="rounded-2xl h-60 w-full relative overflow-hidden border border-white/[0.07]">
+        <img src={BookingImage} alt="" className="w-full h-full object-cover brightness-75"/>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1309]/90 via-black/40 to-transparent"/>
+        <div className="absolute bottom-6 left-6 z-10">
+          <p className="text-[#f0ede6] text-3xl font-bold">Book Your</p>
+          <p className="text-[#86c559] text-3xl font-bold">Experience</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-5">
+
+        {/* Customer Name */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Customer Name</label>
+          <div className="relative flex items-center">
+            <FaUser className="text-[#86c559] absolute left-3"/>
+            <input 
+              type="text" 
+              className="w-full bg-[#1a1f14] border border-white/[0.07] rounded-xl px-4 py-2.5 pl-9 text-sm text-[#f0ede6] outline-none" 
+              value={profile?.full_name ?? ''} 
+              disabled
+            />
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="booking-input">
-          <label htmlFor="name">CUSTOMER NAME</label>
-          <div className="relative w-full flex items-center">
-            <FaUser className="text-primary absolute left-3"/>
-             <input type="text" name="name" className="input-field pl-10" value={profile?.full_name ?? ''} disabled/>
-          </div>
-         
-        </div>
-
-        <div className="booking-input">
-          <p>SELECT SERVICE</p>
+        {/* Select Service */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Select Service</label>
           <div className="relative w-full">
-              <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="border border-neutral-border rounded bg-neutral-dark w-full p-2 text-left flex justify-between items-center"
-              >
-                <span>{selectedService ? `${selectedService.name} - ${selectedService.price}` : 'Select a service'}</span>
-                <span>{isOpen ? '▲' : '▼'}</span>
-              </button>
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="bg-[#1a1f14] border border-white/[0.07] rounded-xl w-full px-4 py-2.5 text-left flex justify-between items-center text-sm text-[#d4cfc6] hover:border-[#86c559]/50 transition-all"
+            >
+              <span>{selectedService ? `${selectedService.name} - PHP ${selectedService.price}` : 'Select a service'}</span>
+              <span className="text-[#86c559]">{isOpen ? '▲' : '▼'}</span>
+            </button>
 
-              {isOpen && (
-                <div className="absolute z-50 w-full bg-neutral-dark border border-neutral-border rounded mt-1 max-h-48 overflow-y-auto">
-                  {services.map(service => (
-                    <div
-                      key={service.id}
-                      onClick={() => {
-                        setSelectedService(service);
-                        setServiceId(service.id);
-                        setIsOpen(false);
-                      }}
-                      className="p-2 hover:bg-primary cursor-pointer flex items-center gap-1"
-                    >
-                     <AiOutlineScissor/> {service.name} - {service.price}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {isOpen && (
+              <div className="absolute z-50 w-full bg-[#1e241a] border border-white/[0.07] rounded-xl mt-1 max-h-48 overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                {services.map(service => (
+                  <div
+                    key={service.id}
+                    onClick={() => {
+                      setSelectedService(service);
+                      setServiceId(service.id);
+                      setIsOpen(false);
+                    }}
+                    className="px-4 py-3 hover:bg-white/[0.06] cursor-pointer flex items-center gap-2 text-sm text-[#d4cfc6] border-b border-white/[0.04] last:border-0"
+                  >
+                    <AiOutlineScissor className="text-[#86c559]"/>
+                    <span>{service.name}</span>
+                    <span className="ml-auto text-[#86c559] font-semibold">PHP {service.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div>
-          <p>CHOOSE YOUR BARBER</p>
-          <div className="flex w-full overflow-x-auto gap-4 py-4">
+        {/* Choose Barber */}
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Choose Your Barber</label>
+          <div className="flex w-full overflow-x-auto gap-3 py-2">
             {barbers.map(barber => (
               <BarberCard 
-              barber={barber} 
-              isSelected={barberId === barber.id}
-              onClick={() => setBarberId(barber.id)}/>
+                key={barber.id}
+                barber={barber} 
+                isSelected={barberId === barber.id}
+                onClick={() => setBarberId(barber.id)}
+              />
             ))}
           </div>
-       
         </div>
 
-        <div className="booking-input">
-          <label htmlFor="date">PREFERRED DATE</label>
+        {/* Preferred Date */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Preferred Date</label>
           <div className="relative flex items-center" onClick={() => dateRef.current.showPicker()}>
-            <MdDateRange className="absolute left-3 text-primary"/>
-            <input type="date" name="date" className="input-field pl-10 " ref={dateRef} value={date} onChange={e => setDate(e.target.value)}/>
+            <MdDateRange className="text-[#86c559] absolute left-3"/>
+            <input 
+              type="date" 
+              className="w-full bg-[#1a1f14] border border-white/[0.07] rounded-xl px-4 py-2.5 pl-9 text-sm text-[#f0ede6] outline-none hover:border-[#86c559]/50 transition-all [&::-webkit-calendar-picker-indicator]:hidden cursor-pointer"
+              ref={dateRef} 
+              value={date} 
+              onChange={e => setDate(e.target.value)}
+            />
           </div>
-
         </div>
 
-        <div>
-          <p>AVAILABLE TIME SLOTS</p>
+        {/* Time Slots */}
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Available Time Slots</label>
           <div className="grid grid-cols-3 gap-2">
             {TIME_SLOTS.map(time => (
-              <div key={time} className={`border rounded-xl text-center py-4 ${timeSlot === time ? 'border-primary' : 'border-neutral-border'}  `} onClick={() => setTimeSlot(time)} >
+              <div 
+                key={time} 
+                onClick={() => setTimeSlot(time)}
+                className={`border rounded-xl text-center py-3 text-sm cursor-pointer transition-all
+                  ${timeSlot === time 
+                    ? 'border-[#86c559] bg-[#86c559]/10 text-[#86c559] font-semibold' 
+                    : 'border-white/[0.07] text-[#d4cfc6] hover:border-[#86c559]/50 hover:bg-white/[0.04]'
+                  }`}
+              >
                 {time}
               </div>
             ))}
           </div>
-        
         </div>
 
-
-        
       </div>
-     
-        <button onClick={handleBooking} className="flex items-center justify-center rounded-md py-4 gap-2 w-full bg-primary text-black font-semibold text-xl">
-          <FaRegCalendarCheck/>
-          <p>BOOK APPOINTMENT</p></button>
-        </div>
-  
+
+      {/* Book Button */}
+      <button 
+        onClick={handleBooking} 
+        className="flex items-center justify-center rounded-xl py-4 gap-2 w-full bg-[#86c559] text-[#0f1309] font-bold text-lg hover:bg-[#86c559]/80 transition-all shadow-[0_4px_24px_rgba(134,197,89,0.25)]"
+      >
+        <FaRegCalendarCheck/>
+        <p>BOOK APPOINTMENT</p>
+      </button>
+
     </div>
-  )
+  </div>
+)
 }
 
 export default BookingPage;

@@ -18,7 +18,7 @@ const RegisterPage = () => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
-    role: 'user'
+    role: 'customer'
   });
   const [isShow, setIsShow] = useState(false);
 

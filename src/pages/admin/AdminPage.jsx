@@ -15,6 +15,8 @@ import { getTopBarbers, getTotalBarbers } from "../../services/barberService";
 import Table from "../../components/Table";
 import TopBarbers from "../../components/TopBarbers";
 import WeeklyChart from "../../components/RevenueChart";
+import { supabase } from "../../lib/supabase";
+import RevenueChart from "../../components/RevenueChart";
 
 const AdminPage = () => {
   const [bookingStats, setBookingStats] = useState({ todayCount: 0, yesterdayCount: 0 });
@@ -26,49 +28,55 @@ const AdminPage = () => {
   const [topBarbers, setTopBarbers] = useState([]);
   const itemsPerPage = 5;
 
-  const fetchBookingStats = async () => {
-    const data = await getBookingStats();
-    setBookingStats(data);
+useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      const [
+        { data, count },
+        statsData,
+        revenueData,
+        barbersCount,
+        topBarbersData
+      ] = await Promise.all([
+        getTodayAppointments(currentPage, itemsPerPage),
+        getBookingStats(),
+        getRevenue(),
+        getTotalBarbers(),
+        getTopBarbers()
+      ]);
+
+      setTodayAppointments(data);
+      setTotalCount(count);
+      setBookingStats(statsData);
+      setRevenue(revenueData);
+      setBarber(barbersCount);
+      setTopBarbers(topBarbersData);
+    } catch(error) {
+      console.error(error);
+    }
   };
 
-  const fetchTotalRevenue = async () => {
-    const data = await getRevenue();
-    setRevenue(data);
-  };
+  fetchAll();
 
-  const fetchBarbers = async () => {
-    const data = await getTotalBarbers();
-    setBarber(data);
-  };
+  const subscription = supabase
+    .channel('appointments-channel')
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'appointments' },
+      () => fetchAll()
+    )
+    .subscribe();
 
-  const fetchTopBarbers = async () => {
-    const data = await getTopBarbers();
-    setTopBarbers(data);
-  };
+  return () => supabase.removeChannel(subscription);
+}, [currentPage]);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const { data, count } = await getTodayAppointments(currentPage, itemsPerPage);
-        setTodayAppointments(data);
-        setTotalCount(count);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchAppointments();
-    fetchBookingStats();
-    fetchTotalRevenue();
-    fetchBarbers();
-    fetchTopBarbers();
-  }, [currentPage]);
-
-  const handleUpdateStatus = async(id, status) => {
-    await updateStatus(id,status)
+  const handleUpdateStatus = async (id, status) => {
+    await updateStatus(id, status);
     setTodayAppointments(prev =>
       prev.map(a => a.id === id ? { ...a, status } : a)
     );
+      const revenueData = await getRevenue();
+      setRevenue(revenueData);
+
   };
 
   const handleDelete = (id) => {
@@ -82,37 +90,39 @@ const AdminPage = () => {
   return (
     <div className="bg-[#0f1309] flex min-h-screen w-full">
       <Sidebar />
-      <div className="flex-1 p-8 flex flex-col gap-6">
+      <div className="flex-1 p-4 lg:p-8 pt-20 lg:pt-8 flex flex-col gap-4 lg:gap-6 overflow-x-hidden">
 
         {/* Greeting */}
         <div>
-          <h1 className="text-2xl font-bold text-[#f0ede6]">Hello, Admin</h1>
+          <h1 className="text-xl lg:text-2xl font-bold text-[#f0ede6]">Hello, Admin</h1>
           <p className="text-gray-500 text-sm">Here's what's happening at Negro Barbershop today.</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Stats — 1 col mobile, 3 col desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
           <StatsCard total={totalBookings} icon={FaRegCalendarCheck} title="total bookings" percentage={bookingPercentage}/>
           <StatsCard total={(revenue.thisMonthTotal).toFixed(2)} icon={GiMoneyStack} title="monthly revenue" symbol="PHP" percentage={monthlyPercentage}/>
           <StatsCard total={barber} icon={FaIdBadge} title="barbers"/>
         </div>
 
-        {/* Table */}
-        <Table
-          appointments={todayAppointments}
-          totalCount={totalCount}
-          currentPage={currentPage}
-          totalPages={Math.ceil(totalCount / itemsPerPage)}
-          onChangePage={setCurrentPage}
-          onUpdateStatus={handleUpdateStatus}
-          onDelete={handleDelete}
-        />
+        {/* Table — horizontal scroll sa mobile */}
+        <div className="overflow-x-auto rounded-2xl">
+          <Table
+            appointments={todayAppointments}
+            totalCount={totalCount}
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalCount / itemsPerPage)}
+            onChangePage={setCurrentPage}
+            onUpdateStatus={handleUpdateStatus}
+            onDelete={handleDelete}
+          />
+        </div>
 
-        {/* Bottom row */}
-        <div className="flex gap-4">
+        {/* Bottom row — stacked sa mobile, side by side sa desktop */}
+        <div className="flex flex-col md:flex-row  gap-4">
           <TopBarbers topThree={topBarbers}/>
           <div className="flex-1">
-            <WeeklyChart/>
+            <RevenueChart/>
           </div>
         </div>
 

@@ -19,7 +19,6 @@ const Appointments = () => {
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ totalCount, setTotalCount ] = useState(0);
   const itemPerPage = 5; 
-  console.log("status filter:", statusFilter)
 
   const fetchBarbers = async() => {
     const data = await getBarbers();
@@ -63,7 +62,7 @@ const Appointments = () => {
     }
   }
 
-  console.log("Barber", barber)
+
   return(
     <div className="bg-neutral-dark flex min-h-screen w-full">
       <Sidebar/>
