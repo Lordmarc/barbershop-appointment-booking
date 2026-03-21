@@ -69,7 +69,8 @@ const BookingPage = () => {
       })
       dispatch({ type: 'ADD_APPOINTMENT', payload: newAppointment })
 
-      toast.success('Booking confirmed!!!')
+      toast.success('Booking Successfully!')
+      navigate('/profile')
       setDate('');
       setTimeSlot('');
       setBarberId('');

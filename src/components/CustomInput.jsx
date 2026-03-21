@@ -10,7 +10,7 @@ const CustomInput = ({
   ...props
 }) => {
   return (
-    <div className={`flex flex-col gap-1 w-full text-slate-400 ${className}`}>
+    <div className={`flex flex-col gap-1 w-full text-[#f0ede6] ${className}`}>
       {label && (
         <label className="text-sm uppercase tracking-widest font-semibold">
           {label}
@@ -18,7 +18,7 @@ const CustomInput = ({
       )}
       <div className="relative flex  items-center w-full">
         {Icon && (
-          <Icon className="absolute left-3 text-primary text-xl pointer-events-none" />
+          <Icon className="absolute left-3 text-[#d4cfc6] text-xl pointer-events-none" />
         )}
 
         <input
@@ -27,8 +27,8 @@ const CustomInput = ({
           onChange={onChange}
           placeholder={placeholder}
           className={
-            `w-full bg-neutral-dark border border-neutral-border p-3 rounded-md
-            text-background-light transition-all focus:outline-none focus:border-primary 
+            `w-full bg-neutral-dark border border-white/[0.07] p-3 rounded-md
+            text-background-light transition-all focus:outline-none focus:border-white/50
             focus:ring-1 focus:ring-primary/30 placeholder:text-slate-600 
             ${Icon ? "pl-11" : "pl-4"} ${rightElement ? "pr-11" : "pr-4"}
             `}

@@ -9,6 +9,7 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { registerAccount } from "../services/authService";
+import Navbar from "../components/Navbar";
 
 
 const RegisterPage = () => {
@@ -21,6 +22,7 @@ const RegisterPage = () => {
     role: 'customer'
   });
   const [isShow, setIsShow] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false)
 
   const navigate = useNavigate();
 
@@ -47,22 +49,44 @@ const RegisterPage = () => {
 
     try{
       await registerAccount(formData.email,formData.password, formData.fullName,  formData.phoneNumber, formData.role );
-      navigate('/');
+      setIsRegistered(true);
     }catch(err){
       console.error(err.message)
     }
 
 
   }
-  
-  return(
-    <div className="w-full flex flex-col min-h-screen max-w-7xl mx-auto ">
-      <div className="flex flex-col flex-1">
-        <div className="flex items-center justify-center relative  px-2 py-4 border-b-2  border-b-neutral-border" onClick={() => navigate(-1)}>
-          <GrLinkPrevious className="absolute left-4"/>
-          <p>Create Account</p>
+if (isRegistered) {
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#0f1309]">
+      <div className="flex flex-col items-center gap-4 p-8 text-center">
+        <div className="w-16 h-16 rounded-full bg-green-400/10 border border-green-400/30 flex items-center justify-center">
+          <span className="text-green-400 text-2xl">✓</span>
         </div>
-
+        <div>
+          <p className="text-xl font-bold text-[#f0ede6]">Check your email!</p>
+          <p className="text-gray-500 text-sm mt-1">
+            We sent a confirmation link to <span className="text-[#86c559]">{formData.email}</span>
+          </p>
+        </div>
+        <button
+          onClick={() => navigate('/login')}
+          className="px-6 py-2.5 bg-[#2a3a1a] border border-[#86c559]/30 text-[#86c559] rounded-xl text-sm font-bold hover:bg-[#86c559]/10 transition-all"
+        >
+          Back to Login
+        </button>
+      </div>
+    </div>
+  );
+}
+  return(
+    <div className="min-h-screen w-full flex items-center justify-center">
+      <Navbar />
+      <div className="flex flex-col max-w-md relative h-full w-full p-4 pt-16 md:pt-20">
+        <div className="flex items-center  justify-center text-3xl my-4 text-[#86c559]">
+          <h2>Create your account</h2>
+        </div>
+ 
         {/* Registration input fields */}
 
         <div className="flex flex-col gap-4 flex-1 h-full  p-4">
@@ -127,15 +151,15 @@ const RegisterPage = () => {
 
             
 
-          <div className="w-full  p-4 bg-primary rounded-lg text-neutral-dark font-semibold text-2xl flex items-center justify-center mt-auto" onClick={handleRegister}>
-              <button>Sign Up</button>
+          <div className="w-full bg-[#86c559] rounded-lg  hover:bg-[#86c559]/50 font-semibold shadow shadow-[#86c559] text-2xl flex items-center justify-center mt-auto" onClick={handleRegister}>
+              <button className="p-3">Sign Up</button>
             </div>
         </div>
 
         
 
       </div>
-          
+      
     </div>
   );
 }

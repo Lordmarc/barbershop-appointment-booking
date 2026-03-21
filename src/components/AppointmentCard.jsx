@@ -56,11 +56,11 @@ const AppointmentCard = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
+        <div className="w-12 h-12 rounded-lg overflow-hidden">
           <img
             src={appointment.barbers?.image || placeholder}
             alt=""
-            className="w-full h-full rounded-full"
+            className="w-full h-full "
           />
         </div>
 
