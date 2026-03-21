@@ -172,6 +172,7 @@ const BookingPage = () => {
             <MdDateRange className="text-[#86c559] absolute left-3"/>
             <input 
               type="date" 
+              min={new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })}
               className="w-full bg-[#1a1f14] border border-white/[0.07] rounded-xl px-4 py-2.5 pl-9 text-sm text-[#f0ede6] outline-none hover:border-[#86c559]/50 transition-all [&::-webkit-calendar-picker-indicator]:hidden cursor-pointer"
               ref={dateRef} 
               value={date} 

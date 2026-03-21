@@ -121,7 +121,7 @@ const Sidebar = () => {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-[#0f1309] border-b border-white/[0.07]">
         <div className="flex items-center gap-2">
           <img src={Logo} alt="logo" className="h-8 w-8 rounded-lg object-cover border border-white/[0.07]"/>
-          <p className="text-[#f0ede6] text-sm font-bold tracking-widest uppercase">Negro</p>
+          <p className="text-[#f0ede6] text-sm font-bold tracking-widest uppercase">Negro Barbershop</p>
         </div>
         <button
           onClick={() => setIsOpen(true)}
