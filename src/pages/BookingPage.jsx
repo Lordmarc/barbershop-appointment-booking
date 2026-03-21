@@ -203,13 +203,23 @@ const BookingPage = () => {
       </div>
 
       {/* Book Button */}
-      <button 
-        onClick={handleBooking} 
-        className="flex items-center justify-center rounded-xl py-4 gap-2 w-full bg-[#86c559] text-[#0f1309] font-bold text-lg hover:bg-[#86c559]/80 transition-all shadow-[0_4px_24px_rgba(134,197,89,0.25)]"
-      >
-        <FaRegCalendarCheck/>
-        <p>BOOK APPOINTMENT</p>
-      </button>
+     {user ? (
+  <button 
+    onClick={handleBooking} 
+    className="flex items-center justify-center rounded-xl py-4 gap-2 w-full bg-[#86c559] text-[#0f1309] font-bold text-lg hover:bg-[#86c559]/80 transition-all shadow-[0_4px_24px_rgba(134,197,89,0.25)]"
+  >
+    <FaRegCalendarCheck/>
+    <p>BOOK APPOINTMENT</p>
+  </button>
+) : (
+  <button 
+    onClick={() => navigate('/login')}
+    className="flex items-center justify-center rounded-xl py-4 gap-2 w-full bg-[#1a1f14] border border-[#86c559]/30 text-[#86c559] font-bold text-lg hover:bg-[#86c559]/10 transition-all"
+  >
+    <FaRegCalendarCheck/>
+    <p>LOGIN TO BOOK</p>
+  </button>
+)}
 
     </div>
   </div>

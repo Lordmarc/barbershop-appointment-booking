@@ -1,34 +1,43 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Sidebar from "../../components/Sidebar";
 import AdminServiceCard from "../../components/AdminServiceCard";
 import AddServiceModal from "../../components/AddServiceModal";
 import { TbRazorElectric } from "react-icons/tb";
 import { HiPlus } from "react-icons/hi";
 import { addNewService, deleteService, getServices, updateService } from "../../services/barberService";
+import { supabase } from "../../lib/supabase";
 import toast from "react-hot-toast";
 
 const Services = () => {
-  const [services, setServices] = useState([]);
+  const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
+  // ─── Query ─────────────────────────────────────────────────
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: getServices,
+  });
+
+  // ─── Realtime ──────────────────────────────────────────────
   useEffect(() => {
-    fetchServices();
-  }, []);
+    const channel = supabase
+      .channel('services-realtime')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'services' },
+        () => queryClient.invalidateQueries({ queryKey: ['services'] })
+      )
+      .subscribe();
 
-  const fetchServices = async () => {
-    try {
-      const data = await getServices();
-      setServices(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    return () => supabase.removeChannel(channel);
+  }, [queryClient]);
 
+  // ─── Handlers ──────────────────────────────────────────────
   const handleAdd = async (serviceData) => {
     try {
-      const data = await addNewService(serviceData);
-      setServices(prev => [data, ...prev]);
+      await addNewService(serviceData);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast.success("Added Successfully!");
     } catch (err) {
       console.error(err);
@@ -38,8 +47,8 @@ const Services = () => {
 
   const handleEdit = async (serviceData) => {
     try {
-      const data = await updateService(serviceData);
-      setServices(prev => prev.map(s => s.id === serviceData.id ? data : s));
+      await updateService(serviceData);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       setEditData(null);
       toast.success("Updated Successfully!");
     } catch (err) {
@@ -51,7 +60,7 @@ const Services = () => {
   const handleDelete = async (id) => {
     try {
       await deleteService(id);
-      setServices(prev => prev.filter(s => s.id !== id));
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       toast.success("Deleted Successfully!");
     } catch (err) {
       console.error(err);
@@ -98,7 +107,7 @@ const Services = () => {
         {/* Divider */}
         <div className="h-px bg-white/[0.07]" />
 
-        {/* Services Grid — 1 col mobile, 2 tablet, 3 large, 4 desktop */}
+        {/* Services Grid */}
         {services.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-3 text-gray-600">
             <TbRazorElectric size={40} />

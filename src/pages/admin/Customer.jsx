@@ -5,6 +5,7 @@ import { HiSearch } from "react-icons/hi";
 import { getCustomers } from "../../services/authService";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { supabase } from "../../lib/supabase";
 dayjs.extend(localizedFormat);
 
 const Customers = () => {
@@ -14,6 +15,16 @@ const Customers = () => {
 
   useEffect(() => {
     fetchCustomers();
+
+      const subscription = supabase
+        .channel('customers-channel')
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'profiles' },
+          () => fetchCustomers()
+        )
+        .subscribe();
+    
+      return () => supabase.removeChannel(subscription);
   }, []);
 
   const fetchCustomers = async () => {

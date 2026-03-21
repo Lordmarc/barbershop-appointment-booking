@@ -4,25 +4,42 @@ import { useEffect, useState } from "react";
 import { useAuthContext } from "../store/AuthContext";
 import { getCustomerAppointment,  } from "../services/appointmentService";
 import dayjs from "dayjs";
+import { supabase } from "../lib/supabase";
 
 const AppointmentCard = () => {
   const { user } = useAuthContext();
   const [appointment, setAppointment] = useState(null);
 
-  useEffect(() => {
-    if (!user) return; // 🔥 important
-
-    fetchCustomerAppointment();
-  }, [user]);
+useEffect(() => {
+  if (!user) return;
 
   const fetchCustomerAppointment = async() => {
     try {
       const data = await getCustomerAppointment(user.id);
-      setAppointment(data); // 🔥 FIX
+      setAppointment(data);
     } catch (err) {
       console.log(err);
+      setAppointment(null); // ← i-set null kapag walang pending
     }
   };
+
+  fetchCustomerAppointment();
+
+  const channel = supabase
+    .channel('appointment-card')
+    .on('postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'appointments',
+        filter: `user_id=eq.${user.id}`
+      },
+      () => fetchCustomerAppointment()
+    )
+    .subscribe();
+
+  return () => supabase.removeChannel(channel);
+}, [user]);
   console.log(appointment)
   if (!appointment) {
     return <p className="text-gray-400">No upcoming appointment</p>;

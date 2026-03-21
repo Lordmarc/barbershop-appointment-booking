@@ -38,6 +38,14 @@ const Profile = () => {
         }
       }
       if(user) fetchProfile();
+
+        const profileChannel = supabase
+    .channel('profiles-channel')
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'profiles' },
+      () => fetchProfile()
+    )
+    .subscribe();
     }, [user]);
 
    const handleLogout = async() => {

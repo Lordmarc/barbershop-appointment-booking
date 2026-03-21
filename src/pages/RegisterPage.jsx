@@ -22,7 +22,6 @@ const RegisterPage = () => {
     role: 'customer'
   });
   const [isShow, setIsShow] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false)
 
   const navigate = useNavigate();
 
@@ -49,36 +48,14 @@ const RegisterPage = () => {
 
     try{
       await registerAccount(formData.email,formData.password, formData.fullName,  formData.phoneNumber, formData.role );
-      setIsRegistered(true);
+      navigate('/')
     }catch(err){
       console.error(err.message)
     }
 
 
   }
-if (isRegistered) {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#0f1309]">
-      <div className="flex flex-col items-center gap-4 p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-green-400/10 border border-green-400/30 flex items-center justify-center">
-          <span className="text-green-400 text-2xl">✓</span>
-        </div>
-        <div>
-          <p className="text-xl font-bold text-[#f0ede6]">Check your email!</p>
-          <p className="text-gray-500 text-sm mt-1">
-            We sent a confirmation link to <span className="text-[#86c559]">{formData.email}</span>
-          </p>
-        </div>
-        <button
-          onClick={() => navigate('/login')}
-          className="px-6 py-2.5 bg-[#2a3a1a] border border-[#86c559]/30 text-[#86c559] rounded-xl text-sm font-bold hover:bg-[#86c559]/10 transition-all"
-        >
-          Back to Login
-        </button>
-      </div>
-    </div>
-  );
-}
+
   return(
     <div className="min-h-screen w-full flex items-center justify-center">
       <Navbar />
@@ -151,8 +128,8 @@ if (isRegistered) {
 
             
 
-          <div className="w-full bg-[#86c559] rounded-lg  hover:bg-[#86c559]/50 font-semibold shadow shadow-[#86c559] text-2xl flex items-center justify-center mt-auto" onClick={handleRegister}>
-              <button className="p-3">Sign Up</button>
+          <div className="w-full bg-[#86c559]/50 rounded-lg  hover:bg-[#86c559]/30 font-semibold shadow shadow-[#86c559] text-2xl flex items-center justify-center mt-auto" onClick={handleRegister}>
+              <button className="p-3 w-full">Sign Up</button>
             </div>
         </div>
 

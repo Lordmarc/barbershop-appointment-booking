@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getBookingStats,
   getPercentageChange,
   getRevenue,
   getTodayAppointments,
   updateStatus,
+  deleteAppointment,
 } from "../../services/appointmentService";
 import Sidebar from "../../components/Sidebar";
 import StatsCard from "../../components/StatsCard";
@@ -14,76 +16,76 @@ import { FaIdBadge } from "react-icons/fa6";
 import { getTopBarbers, getTotalBarbers } from "../../services/barberService";
 import Table from "../../components/Table";
 import TopBarbers from "../../components/TopBarbers";
-import WeeklyChart from "../../components/RevenueChart";
-import { supabase } from "../../lib/supabase";
 import RevenueChart from "../../components/RevenueChart";
+import { supabase } from "../../lib/supabase";
+import { useState } from "react";
 
 const AdminPage = () => {
-  const [bookingStats, setBookingStats] = useState({ todayCount: 0, yesterdayCount: 0 });
-  const [revenue, setRevenue] = useState({ thisMonthTotal: 0, lastMonthTotal: 0 });
-  const [barber, setBarber] = useState(0);
-  const [todayAppointments, setTodayAppointments] = useState([]);
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [topBarbers, setTopBarbers] = useState([]);
   const itemsPerPage = 5;
 
-useEffect(() => {
-  const fetchAll = async () => {
-    try {
-      const [
-        { data, count },
-        statsData,
-        revenueData,
-        barbersCount,
-        topBarbersData
-      ] = await Promise.all([
-        getTodayAppointments(currentPage, itemsPerPage),
-        getBookingStats(),
-        getRevenue(),
-        getTotalBarbers(),
-        getTopBarbers()
-      ]);
+  // ─── Queries ───────────────────────────────────────────────
+  const { data: appointmentsData } = useQuery({
+    queryKey: ['today-appointments', currentPage],
+    queryFn: () => getTodayAppointments(currentPage, itemsPerPage),
+  });
 
-      setTodayAppointments(data);
-      setTotalCount(count);
-      setBookingStats(statsData);
-      setRevenue(revenueData);
-      setBarber(barbersCount);
-      setTopBarbers(topBarbersData);
-    } catch(error) {
-      console.error(error);
-    }
-  };
+  const { data: bookingStats = { todayCount: 0, yesterdayCount: 0 } } = useQuery({
+    queryKey: ['booking-stats'],
+    queryFn: getBookingStats,
+  });
 
-  fetchAll();
+  const { data: revenue = { thisMonthTotal: 0, lastMonthTotal: 0 } } = useQuery({
+    queryKey: ['revenue'],
+    queryFn: getRevenue,
+  });
 
-  const subscription = supabase
-    .channel('appointments-channel')
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'appointments' },
-      () => fetchAll()
-    )
-    .subscribe();
+  const { data: barbersCount = 0 } = useQuery({
+    queryKey: ['barbers-count'],
+    queryFn: getTotalBarbers,
+  });
 
-  return () => supabase.removeChannel(subscription);
-}, [currentPage]);
+  const { data: topBarbers = [] } = useQuery({
+    queryKey: ['top-barbers'],
+    queryFn: getTopBarbers,
+  });
 
+  // ─── Realtime ──────────────────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-dashboard')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'appointments' },
+        () => {
+          
+          queryClient.invalidateQueries({ queryKey: ['today-appointments'] });
+          queryClient.invalidateQueries({ queryKey: ['booking-stats'] });
+          queryClient.invalidateQueries({ queryKey: ['revenue'] });
+          queryClient.invalidateQueries({ queryKey: ['top-barbers'] });
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [queryClient]);
+
+  // ─── Handlers ──────────────────────────────────────────────
   const handleUpdateStatus = async (id, status) => {
     await updateStatus(id, status);
-    setTodayAppointments(prev =>
-      prev.map(a => a.id === id ? { ...a, status } : a)
-    );
-      const revenueData = await getRevenue();
-      setRevenue(revenueData);
 
+    queryClient.invalidateQueries({ queryKey: ['today-appointments'] });
+    queryClient.invalidateQueries({ queryKey: ['revenue'] });
   };
 
-  const handleDelete = (id) => {
-    setTodayAppointments(prev => prev.filter(a => a.id !== id));
+  const handleDelete = async (id) => {
+    await deleteAppointment(id);
+    queryClient.invalidateQueries({ queryKey: ['today-appointments'] });
   };
 
-  const totalBookings = todayAppointments.length;
+  // ─── Derived values ────────────────────────────────────────
+  const todayAppointments = appointmentsData?.data ?? [];
+  const totalCount = appointmentsData?.count ?? 0;
   const bookingPercentage = getPercentageChange(bookingStats.todayCount, bookingStats.yesterdayCount);
   const monthlyPercentage = getPercentageChange(revenue.thisMonthTotal, revenue.lastMonthTotal);
 
@@ -98,14 +100,14 @@ useEffect(() => {
           <p className="text-gray-500 text-sm">Here's what's happening at Negro Barbershop today.</p>
         </div>
 
-        {/* Stats — 1 col mobile, 3 col desktop */}
+        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-          <StatsCard total={totalBookings} icon={FaRegCalendarCheck} title="total bookings" percentage={bookingPercentage}/>
-          <StatsCard total={(revenue.thisMonthTotal).toFixed(2)} icon={GiMoneyStack} title="monthly revenue" symbol="PHP" percentage={monthlyPercentage}/>
-          <StatsCard total={barber} icon={FaIdBadge} title="barbers"/>
+          <StatsCard total={todayAppointments.length} icon={FaRegCalendarCheck} title="total bookings" percentage={bookingPercentage}/>
+          <StatsCard total={revenue.thisMonthTotal.toFixed(2)} icon={GiMoneyStack} title="monthly revenue" symbol="PHP" percentage={monthlyPercentage}/>
+          <StatsCard total={barbersCount} icon={FaIdBadge} title="barbers"/>
         </div>
 
-        {/* Table — horizontal scroll sa mobile */}
+        {/* Table */}
         <div className="overflow-x-auto rounded-2xl">
           <Table
             appointments={todayAppointments}
@@ -118,8 +120,8 @@ useEffect(() => {
           />
         </div>
 
-        {/* Bottom row — stacked sa mobile, side by side sa desktop */}
-        <div className="flex flex-col md:flex-row  gap-4">
+        {/* Bottom row */}
+        <div className="flex flex-col md:flex-row gap-4">
           <TopBarbers topThree={topBarbers}/>
           <div className="flex-1">
             <RevenueChart/>

@@ -6,6 +6,7 @@ import { deleteAppointment, getAppointments, getAppointmentStatusCount } from ".
 import Filter from "../../components/Filter";
 import AppointmentTable from "../../components/AppointmentTable";
 import { getBarbers } from "../../services/barberService";
+import { supabase } from "../../lib/supabase";
 
 const Appointments = () => {
   const { state, dispatch } = useAppointments();
@@ -20,38 +21,40 @@ const Appointments = () => {
   const [ totalCount, setTotalCount ] = useState(0);
   const itemPerPage = 5; 
 
-  const fetchBarbers = async() => {
-    const data = await getBarbers();
-    setBarbers(data);
-  }
-
-  const fetchStatusCount = async() => {
-    const { data, statusCount } = await getAppointmentStatusCount();
-    setStatusCount(statusCount); 
-  }
-
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
     setCurrentPage(1);
   }
 
-  useEffect(() => {
-    const fetchAppointments = async() => {
-      try{
-        const { data, count } = await getAppointments(currentPage, itemPerPage, statusFilter, startDate, endDate, barber);
-        dispatch({ type: "SET_APPOINTMENTS", payload: data })
-        setTotalCount(count)
-      }catch(err){
-        console.error(err)
-      }
+useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      const [{ data, count }, { statusCount }, barbersData] = await Promise.all([
+        getAppointments(currentPage, itemPerPage, statusFilter, startDate, endDate, barber),
+        getAppointmentStatusCount(),
+        getBarbers(),
+      ]);
+
+      dispatch({ type: "SET_APPOINTMENTS", payload: data });
+      setTotalCount(count);
+      setStatusCount(statusCount);
+      setBarbers(barbersData);
+    } catch (err) {
+      console.error(err);
     }
-    fetchAppointments();
+  };
+  fetchAll();
+
+    const subscription = supabase
+      .channel('appointments-channel')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'appointments' },
+        () => fetchAll()
+      )
+      .subscribe();
   
-  },[currentPage, startDate, endDate, statusFilter,barber])
-    useEffect(() => {
-      fetchStatusCount();
-      fetchBarbers();
-    }, []);
+    return () => supabase.removeChannel(subscription);
+}, [currentPage, startDate, endDate, statusFilter, barber]);
   const handleDelete = async(id) => {
     try{
       await deleteAppointment(id);

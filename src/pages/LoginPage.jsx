@@ -3,7 +3,7 @@ import { CiLock } from "react-icons/ci";
 import { FaFacebook, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineMail } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import {
   loginWithEmail,
@@ -129,10 +129,12 @@ const LoginPage = () => {
                 {isShow ? <FaRegEyeSlash /> : <FaRegEye />}
               </div>
             </div>
+
+            <Link to="/forgot-password" className="hover:underline">Forgot password?</Link>
           </div>
 
           <div
-            className="flex w-full items-center justify-center  bg-[#86c559] text-[#f0ede6] font-semibold text-2xl rounded-lg  shadow shadow-[#86c559] hover:bg-[#86c559]/50"
+            className="flex w-full items-center justify-center  bg-[#86c559]/50 text-[#f0ede6] font-semibold text-2xl rounded-lg  shadow shadow-[#86c559] hover:bg-[#86c559]/30"
             onClick={handleLogin}
           >
             <button className="p-3 w-full h-full">Login to my Account</button>

@@ -1,63 +1,67 @@
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Sidebar from "../../components/Sidebar";
 import { GiMoneyStack } from "react-icons/gi";
 import { HiUserAdd } from "react-icons/hi";
 import AdminBarberCard from "../../components/AdminBarberCard";
-import { useEffect, useState } from "react";
 import { addNewBarber, deleteBarber, getBarbers, getTopPerformer, getTotalBarbers, updateBarber, updateBarberStatus } from "../../services/barberService";
 import { FaPlusCircle } from "react-icons/fa";
 import AddBarberModal from "../../components/AddBarberModal";
 import EditBarberModal from "../../components/EditBarberModal";
 import toast from "react-hot-toast";
+import placeholder from "../../assets/placeholder.png";
+import { supabase } from "../../lib/supabase";
 
 const Barbers = () => {
-  const [barbers, setBarbers] = useState([]);
-  const [barbersCount, setBarbersCount] = useState(0);
-  const [topPerformer, setTopPerformer] = useState([]);
+  const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [selectedBarber, setSelectedBarber] = useState(null);
   const [isShowProfile, setIsShowProfile] = useState(false);
 
+  // ─── Queries ───────────────────────────────────────────────
+  const { data: barbers = [] } = useQuery({
+    queryKey: ['barbers'],
+    queryFn: getBarbers,
+  });
+
+  const { data: barbersCount = 0 } = useQuery({
+    queryKey: ['barbers-count'],
+    queryFn: getTotalBarbers,
+  });
+
+  const { data: topPerformer = [] } = useQuery({
+    queryKey: ['top-performer'],
+    queryFn: getTopPerformer,
+  });
+
+  // ─── Realtime ──────────────────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel('barbers-realtime')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'barbers' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['barbers'] });
+          queryClient.invalidateQueries({ queryKey: ['barbers-count'] });
+          queryClient.invalidateQueries({ queryKey: ['top-performer'] });
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [queryClient]);
+
+  // ─── Handlers ──────────────────────────────────────────────
   const handleEditProfile = (barber) => {
     setSelectedBarber(barber);
     setIsShowProfile(true);
   };
 
-  const fetchBarbersCount = async () => {
-    try {
-      const count = await getTotalBarbers();
-      setBarbersCount(count);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchTopPerformer = async () => {
-    try {
-      const sorted = await getTopPerformer();
-      setTopPerformer(sorted);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const fetchBarbers = async () => {
-      try {
-        const data = await getBarbers();
-        setBarbers(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchBarbers();
-    fetchBarbersCount();
-    fetchTopPerformer();
-  }, []);
-
   const handleAddBarber = async (barberData) => {
     try {
-      const data = await addNewBarber(barberData);
-      setBarbers(prev => [...prev, data]);
+      await addNewBarber(barberData);
+      queryClient.invalidateQueries({ queryKey: ['barbers'] });
+      queryClient.invalidateQueries({ queryKey: ['barbers-count'] });
       toast.success("Barber Added Successfully!");
     } catch (err) {
       console.error(err);
@@ -67,8 +71,8 @@ const Barbers = () => {
 
   const handleUpdateBarber = async (id, barberData) => {
     try {
-      const updated = await updateBarber(id, barberData);
-      setBarbers(prev => prev.map(b => b.id === id ? updated : b));
+      await updateBarber(id, barberData);
+      queryClient.invalidateQueries({ queryKey: ['barbers'] });
       setIsShowProfile(false);
       setSelectedBarber(null);
       toast.success("Barber Updated Successfully!");
@@ -81,7 +85,7 @@ const Barbers = () => {
   const handleUpdateStatus = async (id, newStatus) => {
     try {
       await updateBarberStatus(id, newStatus);
-      setBarbers(prev => prev.map(b => b.id === id ? { ...b, status: newStatus } : b));
+      queryClient.invalidateQueries({ queryKey: ['barbers'] });
       toast.success("Barber Updated Successfully!");
     } catch (err) {
       console.log(err);
@@ -92,7 +96,8 @@ const Barbers = () => {
   const handleDeleteBarber = async (id) => {
     try {
       await deleteBarber(id);
-      setBarbers(prev => prev.filter(b => b.id !== id));
+      queryClient.invalidateQueries({ queryKey: ['barbers'] });
+      queryClient.invalidateQueries({ queryKey: ['barbers-count'] });
       toast.success("Barber Deleted Successfully!");
     } catch (err) {
       console.log(err);
@@ -105,21 +110,23 @@ const Barbers = () => {
       <Sidebar />
       <div className="flex-1 p-4 lg:p-8 pt-20 lg:pt-8 flex flex-col gap-4">
 
-        {/* Top Stats — stacked mobile, row desktop */}
+        {/* Top Stats */}
         <div className="flex flex-col lg:flex-row items-stretch gap-4">
 
           {/* Top Performer */}
           <div className="border border-white/[0.07] rounded-2xl p-6 lg:p-8 flex items-center flex-1 bg-[#1a1f14] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <div className="flex flex-col">
               <p className="uppercase text-gray-500 text-xs tracking-widest">top performer</p>
-              <h2 className="text-3xl lg:text-5xl text-[#f0ede6] font-bold tracking-tight">{topPerformer[0]?.name}</h2>
+              <h2 className="text-3xl lg:text-5xl text-[#f0ede6] font-bold tracking-tight">
+                {topPerformer[0] ? topPerformer[0]?.name : 'No Top Performer yet'}
+              </h2>
               <div className="flex items-center gap-1 mt-1">
                 <GiMoneyStack className="text-green-400"/>
                 <p className="text-gray-400 text-sm">{topPerformer[0]?.count} Bookings</p>
               </div>
             </div>
             <div className="h-16 w-16 lg:h-20 lg:w-20 overflow-hidden rounded-xl ml-auto border-2 border-white/[0.07] shrink-0">
-              <img src={topPerformer[0]?.image} alt="" className="w-full h-full object-cover"/>
+              <img src={topPerformer[0]?.image || placeholder} alt="" className="w-full h-full object-cover"/>
             </div>
           </div>
 
@@ -132,8 +139,6 @@ const Barbers = () => {
 
         {/* Barbers Section */}
         <div className="flex flex-col gap-4">
-
-          {/* Section Header */}
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <div>
               <p className="text-[#f0ede6] text-lg font-semibold">Artisan Staff</p>
@@ -148,7 +153,6 @@ const Barbers = () => {
             </button>
           </div>
 
-          {/* Cards Grid — 2 cols mobile, 3 cols tablet, 5 cols desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {barbers.map(barber => (
               <AdminBarberCard
@@ -166,7 +170,6 @@ const Barbers = () => {
               <FaPlusCircle className="h-16 w-16 lg:h-24 lg:w-24 text-gray-600 group-hover:text-slate-500"/>
             </div>
           </div>
-
         </div>
       </div>
 
